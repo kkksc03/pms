@@ -23,6 +23,7 @@ class MapStorage : public AbstractStorage {
             storage_[typed_keys[index]]+=typed_vals[index];
     }
     LOG(INFO) << "Test by Andy";
+    
   }
 
   virtual third_party::SArray<char> SubGet(const third_party::SArray<Key>& typed_keys) override {
