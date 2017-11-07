@@ -21,6 +21,7 @@ make -j4      # build all the targets
 ./HuskyUnitTest  # run all unit tests
 ./HuskyUnitTest --gtest_filter=TestServerThread.RegisterModel  # run a specific test
 ```
+![Mind map](mindmap.svg)
 
 ## Tutorial 2
 * The mailbox is provided as a bottom layer communication module
@@ -43,6 +44,21 @@ make -j4      # build all the targets
 * Understand how model parameters are rendered to users in the process from mailbox receiving messages, to worker threads invoking callbacks, and finally to KVClientTable returning with completed requests
 * Implement a callback runner to handle reply messages
 * Implement [KVClientTable](worker/kv_client_table.hpp) according to the information given in worker/kv\_client\_table\_test.cpp
+
+## Tutorial 6
+* Check the io folder and understand how to connect to HDFS and coordinate data loading among workers
+* Take a look at test/test_hdfs_read.cpp and see how the connector may be used to load data
+* Check the lib folder for the abstraction of data loaders and labeled sample
+* Implement the data loaders and parsers. Understanding the producer-consumer paradigm may help
+
+## Tutorial 7
+* Check the tests for the three consistency models and understand the expected behaviors
+* Check the pending buffer and progress tracker interface
+* Implement ASP, BSP, and SSP models
+
+## Tutorial 8
+* Check the tests and complete engine.cpp, info.hpp, simple_id_mapper.cpp, and worker_spec.cpp
+* Write a script to launch the system on the cluster
 
 ### Some tools: 
 * [glog](http://rpg.ifi.uzh.ch/docs/glog.html). You may use `GLOG_logtostderr=1 ./HuskyUnitTest` to print the `LOG(INFO)` information to the console.
