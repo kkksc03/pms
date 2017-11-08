@@ -39,8 +39,82 @@ class KVClientTable {
   // ========== API ========== //
   void Clock();
   // vector version
-  void Add(const std::vector<Key>& keys, const std::vector<Val>& vals) {}
-  void Get(const std::vector<Key>& keys, std::vector<Val>* vals) {}
+  void Add(const std::vector<Key>& keys, const std::vector<Val>& vals) {   
+    third_party::SArray<double> vtmp;
+    third_party::SArray<Key> ktmp;
+    int i=0;
+    while(i<vals.size()){
+      vtmp.push_back(vals[i]);
+      i++;
+    }
+    i=0;
+    while(i<keys.size()){
+      ktmp.push_back(keys[i]);
+      i++;
+    }
+    std::vector<std::pair<int,KVPairs>> sliced;
+    partition_manager_->Slice(std::make_pair(ktmp,vtmp),&sliced);
+    uint32_t count=0;
+    while(count<sliced.size()){
+      Message m;
+      third_party::SArray<char> key_char;
+      key_char=sliced[count].second.first;
+      third_party::SArray<float> val_chart;
+      int j=0;
+      while(j<sliced[count].second.second.size()){
+        val_chart.push_back((float)sliced[count].second.second.data()[j]);
+        j++;
+      }
+      third_party::SArray<char> val_char;
+      val_char=val_chart;
+      m.AddData(key_char);
+      m.AddData(val_char);
+      m.meta.sender=app_thread_id_;
+      m.meta.recver=sliced[count].first;
+      m.meta.flag=Flag::kAdd;
+      m.meta.model_id=model_id_;
+      sender_queue_->Push(m);
+      count++;
+    }
+  }
+  void Get(const std::vector<Key>& keys, std::vector<Val>* vals) {
+    third_party::SArray<Key> ktmp;
+    int i=0;
+    while(i<keys.size()){
+      ktmp.push_back(keys[i]);
+      i++;
+    }
+    std::vector<std::pair<int,third_party::SArray<Key>>> sliced;
+    partition_manager_->Slice(ktmp,&sliced);
+    uint32_t count=0;
+    while(count<sliced.size()){
+      Message m;
+      third_party::SArray<char> key_char;
+      key_char=sliced[count].second;
+      m.AddData(key_char);
+      m.meta.sender=app_thread_id_;
+      m.meta.recver=sliced[count].first;
+      m.meta.model_id=model_id_;
+      m.meta.flag=Flag::kGet;
+      sender_queue_->Push(m);
+      count++;
+    }
+    third_party::SArray<float> vtp;
+    std::vector<float> tmp;
+    std::function<void(Message&)> recv_handle =[&](Message m){
+      vtp=m.data[1];
+      for(int i=0;i<vtp.size();i++){
+        tmp.push_back(vtp[i]);
+      }
+    };
+    std::function<void()> recv_finish_handle =[&](){
+        vals->assign(tmp.begin(),tmp.end());
+    };
+    callback_runner_->RegisterRecvFinishHandle(app_thread_id_,model_id_,recv_finish_handle);
+    callback_runner_->RegisterRecvHandle(app_thread_id_,model_id_,recv_handle);
+    callback_runner_->NewRequest(app_thread_id_,model_id_,sliced.size());
+    callback_runner_->WaitRequest(app_thread_id_,model_id_);
+  }
   // sarray version
   void Add(const third_party::SArray<Key>& keys, const third_party::SArray<Val>& vals) {}
   void Get(const third_party::SArray<Key>& keys, third_party::SArray<Val>* vals) {}
