@@ -56,10 +56,8 @@ TEST_F(TestASPModel, CheckGetAndAdd) {
   msg.meta.recver = 0;
   msg.AddData(third_party::SArray<int>{0});
   //Add by andy
-  LOG(INFO)<<"Before Get";
   model->Get(msg);
    //After get add by add
-  LOG(INFO)<<"After Get";
   // Get_3_0
   msg = Message();
   msg.meta.flag = Flag::kGet;
