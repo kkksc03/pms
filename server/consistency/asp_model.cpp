@@ -3,11 +3,6 @@
 
 namespace csci5570 {
 
-#include "server/consistency/asp_model.hpp"
-#include "glog/logging.h"
-
-namespace csci5570 {
-
 ASPModel::ASPModel(uint32_t model_id, std::unique_ptr<AbstractStorage>&& storage_ptr,
                    ThreadsafeQueue<Message>* reply_queue) :model_id_(model_id),storage_(std::move(storage_ptr),reply_queue_(reply_queue)){}
 
