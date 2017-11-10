@@ -3,15 +3,15 @@
 namespace csci5570 {
 
 std::vector<Message> PendingBuffer::Pop(const int clock) {
-  // TODO
+  return this->map_[clock];
 }
 
 void PendingBuffer::Push(const int clock, Message& msg) {
-  // TODO
+  this->map_[clock].push_back(msg);
 }
 
 int PendingBuffer::Size(const int progress) {
-  // TODO
+  return this->map_[progress].size();
 }
 
 }  // namespace csci5570
