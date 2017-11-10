@@ -25,7 +25,7 @@ void ASPModel::ResetWorker(Message& msg) {
   CHECK_EQ(msg.data.size(), 1);
   third_party::SArray<uint32_t> tids;
   tids = msg.data[0];
-  std::vector<uint32_t> tids vec(tids.begin(), tids.end());
+  std::vector<uint32_t> tids_vec(tids.begin(), tids.end());
   this->progress_tracker_.Init(tids_vec);
   Message reply_msg;
   reply_msg.meta.model_id = model_id_;
