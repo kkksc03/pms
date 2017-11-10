@@ -20,7 +20,8 @@ namespace csci5570 {
  */
 template <typename Val>
 class KVClientTable {
- public:
+  using KVPairs = std::pair<third_party::SArray<Key>, third_party::SArray<double>>; 
+  public:
   /**
    * @param app_thread_id       user thread id
    * @param model_id            model id
