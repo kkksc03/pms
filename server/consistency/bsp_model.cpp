@@ -8,7 +8,7 @@ BSPModel::BSPModel(uint32_t model_id, std::unique_ptr<AbstractStorage>&& storage
   // TODO
   model_id_=model_id;
   reply_queue = reply_queue;
-  storage_=std::move(storage_ptr)
+  storage_=std::move(storage_ptr);
 }
 
 void BSPModel::Clock(Message& msg) {
@@ -19,7 +19,7 @@ void BSPModel::Clock(Message& msg) {
     if(temp !=-1){
       for(size_t index = 0; index < add_buffer_.size();index++){
         storage_->Add(add_buffer_[index]);
-        add_buffer_.erase(add_buffer_.begin()+index)
+        add_buffer_.erase(add_buffer_.begin()+index);
       }
     }
   }
@@ -43,7 +43,7 @@ int BSPModel::GetProgress(int tid) {
 
 int BSPModel::GetGetPendingSize() {
   // TODO
-  return get_buffer_.size()
+  return get_buffer_.size()；
 }
 
 int BSPModel::GetAddPendingSize() {
@@ -58,7 +58,7 @@ void BSPModel::ResetWorker(Message& msg) {
   third_party::SArray<int> tidstemp;
   tidstemp = msg.data[0];
   std::vector<uint32_t> tids;
-  for(size_t= i=0; i<tidstemp.size();i++){
+  for(size_t i=0; i<tidstemp.size();i++){
     tids.push_back(tidstemp[i]);
   }
   progress_tracker_.Init(tids);
