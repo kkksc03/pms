@@ -43,7 +43,7 @@ int BSPModel::GetProgress(int tid) {
 
 int BSPModel::GetGetPendingSize() {
   // TODO
-  return get_buffer_.size()；
+  return get_buffer_.size();
 }
 
 int BSPModel::GetAddPendingSize() {
