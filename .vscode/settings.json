@@ -20,6 +20,9 @@
         "new": "cpp",
         "stdexcept": "cpp",
         "typeinfo": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "bitset": "cpp",
+        "chrono": "cpp",
+        "queue": "cpp"
     }
 }
