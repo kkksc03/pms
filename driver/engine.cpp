@@ -86,7 +86,7 @@ void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_id
     queue.WaitAndPop(&reply);
     CHECK(reply.meta.flag==Flag::kResetWorkerInModel);
     CHECK(reply.meta.model_id==table_id);
-    --count;
+    - -count;
   }
   mailbox_->RegisterQueue(id);
   id_mapper_->DeallocateWorkerThread(node_.id,id);
@@ -96,6 +96,13 @@ void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_id
 
 void Engine::Run(const MLTask& task) {
   // TODO
+  CHECK(task.IsSetup());
+  auto worker_spec =AllocateWorkers(task.GetWorkerAlloc());
+  //Init table
+  const auto& tables =task.GetTables();
+  for(auto& table : tables)
+    InitTable(table,worker_spec.GetAllThreadIds());
+    Barrier();
 }
 
 void Engine::RegisterPartitionManager(uint32_t table_id, std::unique_ptr<AbstractPartitionManager> partition_manager) {

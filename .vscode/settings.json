@@ -23,6 +23,7 @@
         "algorithm": "cpp",
         "bitset": "cpp",
         "chrono": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "__string": "cpp"
     }
 }
