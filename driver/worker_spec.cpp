@@ -54,6 +54,11 @@ std::map<uint32_t, std::vector<uint32_t>> WorkerSpec::GetNodeToWorkers() {
 std::vector<uint32_t> WorkerSpec::GetAllThreadIds() {
   // TODO
   // Change thread_ids_  from set to vector
+  std::vector<uint32_t> vec_thread_ids_;
+  std::copy(thread_ids_.begin(),thread_ids_.end(),back_inserter(vec_thread_ids_));
+  return vec_thread_ids_;
+
+
 }
 
 void WorkerSpec::InsertWorkerIdThreadId(uint32_t worker_id, uint32_t thread_id) {
@@ -61,6 +66,8 @@ void WorkerSpec::InsertWorkerIdThreadId(uint32_t worker_id, uint32_t thread_id) 
   /**
    * Register worker id (specific to a task) along with the corresponding thread id
    */
+  
+
 }
 
 void WorkerSpec::Init(const std::vector<WorkerAlloc>& worker_alloc) {
