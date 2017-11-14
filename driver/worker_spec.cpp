@@ -66,6 +66,9 @@ void WorkerSpec::InsertWorkerIdThreadId(uint32_t worker_id, uint32_t thread_id) 
   /**
    * Register worker id (specific to a task) along with the corresponding thread id
    */
+  worker_to_thread_.insert(std::make_pair(worker_id,thread_id));
+  thread_to_worker_.insert(srd::make_pair(thread_id,worker_id));
+  node_to_threads_[worker_to_node_[worker_id]].push_back[thread_id];
 
 
 }
@@ -76,12 +79,6 @@ void WorkerSpec::Init(const std::vector<WorkerAlloc>& worker_alloc) {
    * Initiates the worker specification with the specified allocation
    * Update worker_to_node_, node_to_workers_ and num_workers_
    */
-  std::map<uint32_t, uint32_t> worker_to_node_;
-  std::map<uint32_t, std::vector<uint32_t>> node_to_workers_;
-  std::map<uint32_t, uint32_t> worker_to_thread_;
-  std::map<uint32_t, uint32_t> thread_to_worker_;
-  std::map<uint32_t, std::vector<uint32_t>> node_to_threads_;
-  std::set<uint32_t> thread_ids_;
-  uint32_t num_workers_ = 0;
+
 }
 }  // namespace csci5570
