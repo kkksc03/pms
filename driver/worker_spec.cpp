@@ -69,7 +69,7 @@ void WorkerSpec::InsertWorkerIdThreadId(uint32_t worker_id, uint32_t thread_id) 
   worker_to_thread_.insert(std::make_pair(worker_id,thread_id));
   thread_to_worker_.insert(std::make_pair(thread_id,worker_id));
   node_to_threads_[worker_to_node_[worker_id]].push_back(thread_id);
-
+  thread_ids_.insert(thread_id);
 
 }
 
