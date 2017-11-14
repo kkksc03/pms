@@ -6,23 +6,7 @@ namespace csci5570 {
 WorkerSpec::WorkerSpec(const std::vector<WorkerAlloc>& worker_alloc) {
   // TODO
   // {{0, 3}, {1, 2}}: 3 workers on node 0, 2 workers on node 1.
-  int current_worker_id = 0;
-  for (int i = 0; i < worker_alloc.size(); i++) {
-    int node_id = worker_alloc[i].node_id;
-    int num_workers = worker_alloc[i].num_workers;
-    std::vector<uint32_t> worker_on_current_node;
-    for (int i = 0; i < num_workers; i++) {
-      // Update worker_to_node
-      this->worker_to_node_.insert(std::map<uint32_t, uint32_t>::value_type(current_worker_id, node_id));
-
-      worker_on_current_node.push_back(current_worker_id);
-      current_worker_id++;
-    }
-    // Update node_to_worker
-    this->node_to_workers_.insert(
-        std::map<uint32_t, std::vector<uint32_t>>::value_type(node_id, worker_on_current_node));
-  }
-  this->num_workers_=current_worker_id;
+  this->Init(worker_alloc);
 }
 bool WorkerSpec::HasLocalWorkers(uint32_t node_id) const {
   /**
@@ -79,6 +63,22 @@ void WorkerSpec::Init(const std::vector<WorkerAlloc>& worker_alloc) {
    * Initiates the worker specification with the specified allocation
    * Update worker_to_node_, node_to_workers_ and num_workers_
    */
+  int current_worker_id = 0;
+  for (int i = 0; i < worker_alloc.size(); i++) {
+    int node_id = worker_alloc[i].node_id;
+    int num_workers = worker_alloc[i].num_workers;
+    std::vector<uint32_t> worker_on_current_node;
+    for (int i = 0; i < num_workers; i++) {
+      // Update worker_to_node
+      this->worker_to_node_.insert(std::map<uint32_t, uint32_t>::value_type(current_worker_id, node_id));
 
+      worker_on_current_node.push_back(current_worker_id);
+      current_worker_id++;
+    }
+    // Update node_to_worker
+    this->node_to_workers_.insert(
+        std::map<uint32_t, std::vector<uint32_t>>::value_type(node_id, worker_on_current_node));
+  }
+  this->num_workers_=current_worker_id;
 }
 }  // namespace csci5570
