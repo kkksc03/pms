@@ -6,7 +6,6 @@ namespace csci5570 {
 WorkerSpec::WorkerSpec(const std::vector<WorkerAlloc>& worker_alloc) {
   // TODO
   // {{0, 3}, {1, 2}}: 3 workers on node 0, 2 workers on node 1.
-  Init();
   int current_worker_id = 0;
   for (int i = 0; i < worker_alloc.size(); i++) {
     int node_id = worker_alloc[i].node_id;
