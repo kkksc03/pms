@@ -88,7 +88,7 @@ void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_id
     CHECK(reply.meta.model_id==table_id);
     - -count;
   }
-  mailbox_->DegisterQueue(id);
+  mailbox_->RegisterQueue(id,&queue);
   id_mapper_->DeallocateWorkerThread(node_.id,id);
 
 
