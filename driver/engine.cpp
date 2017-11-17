@@ -19,13 +19,20 @@ void Engine::StartEverything(int num_server_threads_per_node) {
   // TODO
 }
 void Engine::CreateIdMapper(int num_server_threads_per_node) {
-  // TODO
+   this->id_mapper_.reset(new SimpleIdMapper(node_,nodes_));
+   this->id_mapper_->Init(num_server_threads_per_node);
 }
 void Engine::CreateMailbox() {
-  // TODO
+    this->mailbox_.reset(new Mailbox(node_,nodes_,this->id_mapper_.get()));
 }
 void Engine::StartServerThreads() {
-  // TODO
+  //  std::vector<uint32_t> server_thread_ids=id_mapper_->GetAllServerThreads();
+  //  std::vector<uint32_t>::iterator it=server_thread_ids.begin();
+  //  for(;it!=server_thread_ids.end();it++){
+    //  ServerThread server_thread(*it);
+    //  this->server_thread_group_.push_back(server_thread);
+    //  server_thread.Start();
+    //  }
 }
 void Engine::StartWorkerThreads() {
   // TODO
@@ -34,9 +41,9 @@ void Engine::StartMailbox() {
   // TODO
 }
 void Engine::StartSender() {
-  // TODO
+    this->sender_.reset(new Sender(this->mailbox_.get()));
+    this->sender_->Start();
 }
-
 void Engine::StopEverything() {
   // TODO
 }
