@@ -145,7 +145,7 @@ class Engine {
   std::unique_ptr<AbstractCallbackRunner> callback_runner_;
   std::unique_ptr<AbstractWorkerThread> worker_thread_;
   // server elements
-  std::vector<ServerThread> server_thread_group_;
+  std::vector<std::unique_ptr<ServerThread>> server_thread_group_;
   size_t model_count_ = 0;
 };
 
