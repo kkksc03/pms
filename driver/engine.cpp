@@ -142,7 +142,7 @@ void Engine::Run(const MLTask& task) {
 void Engine::RegisterPartitionManager(uint32_t table_id, std::unique_ptr<AbstractPartitionManager> partition_manager) {
   // TODO
   this->partition_manager_map_.insert(
-      std::map<uint32_t, std::unique_ptr<AbstractPartitionManager>>::value_type(table_id, partition_manager));
+      std::map<uint32_t, std::unique_ptr<AbstractPartitionManager>>::value_type(table_id,std::move(partition_manager)));
 }
 
 }  // namespace csci5570
