@@ -52,7 +52,7 @@ void Engine::StartWorkerThreads() {
   // TODO
 }
 void Engine::StartMailbox() {
-  this->mailbox_.Start();
+  this->mailbox_->Start();
   // TODO
 }
 void Engine::StartSender() {
@@ -81,10 +81,10 @@ void Engine::StopWorkerThreads() {
 }
 void Engine::StopSender() {
   // TODO
-  this.sender_.Stop();
+  this->sender_->Stop();
 }
 void Engine::StopMailbox() {
-  this.mailbox_.Stop();
+  this->mailbox_->Stop();
   // TODO
 }
 
