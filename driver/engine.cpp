@@ -42,8 +42,8 @@ void Engine::CreateMailbox() { this->mailbox_.reset(new Mailbox(node_, nodes_, t
 void Engine::StartServerThreads() {
   std::vector<uint32_t> server_thread_ids = id_mapper_->GetAllServerThreads();
   std::vector<uint32_t>::iterator it = server_thread_ids.begin();
-  for (; it != server_thread_ids.end(); it++) {
-    std::unique_ptr<ServerThread> s_pt(*it);
+  for (;it!=server_thread_ids.end(); it++) {
+    std::unique_ptr<ServerThread> s_pt(new ServerThread(*it));
     s_pt->Start();
     this->server_thread_group_.push_back(std::move(s_pt));
   }
