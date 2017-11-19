@@ -90,6 +90,7 @@ void Engine::StopMailbox() {
 
 void Engine::Barrier() {
   // TODO
+  this->mailbox_->Barrier();
 }
 
 WorkerSpec Engine::AllocateWorkers(const std::vector<WorkerAlloc>& worker_alloc) {
