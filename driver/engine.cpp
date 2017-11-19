@@ -17,35 +17,61 @@ namespace csci5570 {
 
 void Engine::StartEverything(int num_server_threads_per_node) {
   // TODO
+  /**
+   * The flow of starting the engine:
+   * 1. Create an id_mapper and a mailbox
+   * 2. Start Sender
+   * 3. Create ServerThreads and WorkerThreads
+   * 4. Register the threads to mailbox through ThreadsafeQueue
+   * 5. Start the communication threads: bind and connect to all other nodes
+   *
+   * @param num_server_threads_per_node the number of server threads to start on each node
+   */
+  this->CreateIdMapper(num_server_threads_per_node);
+  this->CreateMailbox();
+  this->StartSender();
+  this->StartServerThreads();
+  this->StartWorkerThreads();
+  this->StartMailbox();
 }
 void Engine::CreateIdMapper(int num_server_threads_per_node) {
-   this->id_mapper_.reset(new SimpleIdMapper(node_,nodes_));
-   this->id_mapper_->Init(num_server_threads_per_node);
+  this->id_mapper_.reset(new SimpleIdMapper(node_, nodes_));
+  this->id_mapper_->Init(num_server_threads_per_node);
 }
-void Engine::CreateMailbox() {
-    this->mailbox_.reset(new Mailbox(node_,nodes_,this->id_mapper_.get()));
-}
+void Engine::CreateMailbox() { this->mailbox_.reset(new Mailbox(node_, nodes_, this->id_mapper_.get())); }
 void Engine::StartServerThreads() {
-   std::vector<uint32_t> server_thread_ids=id_mapper_->GetAllServerThreads();
-   std::vector<uint32_t>::iterator it=server_thread_ids.begin();
-   for(;it!=server_thread_ids.end();it++){
-     std::unique<ServerThread> s_pt(*it);
-     s_pt->Start();
-     this->server_thread_group_.push_back(std::move(s_pt));
-     }
+  std::vector<uint32_t> server_thread_ids = id_mapper_->GetAllServerThreads();
+  std::vector<uint32_t>::iterator it = server_thread_ids.begin();
+  for (; it != server_thread_ids.end(); it++) {
+    std::unique<ServerThread> s_pt(*it);
+    s_pt->Start();
+    this->server_thread_group_.push_back(std::move(s_pt));
+  }
 }
 void Engine::StartWorkerThreads() {
   // TODO
 }
 void Engine::StartMailbox() {
+  this->mailbox_.Start();
   // TODO
 }
 void Engine::StartSender() {
-    this->sender_.reset(new Sender(this->mailbox_.get()));
-    this->sender_->Start();
+  this->sender_.reset(new Sender(this->mailbox_.get()));
+  this->sender_->Start();
 }
 void Engine::StopEverything() {
   // TODO
+  /**
+   * The flow of stopping the engine:
+   * 1. Stop the Sender
+   * 2. Stop the mailbox: by Barrier() and then exit
+   * 3. The mailbox will stop the corresponding registered threads
+   * 4. Stop the ServerThreads and WorkerThreads
+   */
+  this->StopSender();
+  this->StopMailbox();
+  this->StopServerThreads();
+  this->StopWorkerThreads();
 }
 void Engine::StopServerThreads() {
   // TODO
@@ -55,8 +81,10 @@ void Engine::StopWorkerThreads() {
 }
 void Engine::StopSender() {
   // TODO
+  this.sender_.Stop();
 }
 void Engine::StopMailbox() {
+  this.mailbox_.Stop();
   // TODO
 }
 
