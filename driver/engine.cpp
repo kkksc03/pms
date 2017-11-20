@@ -80,7 +80,6 @@ void Engine::StopServerThreads() {
 }
 void Engine::StopWorkerThreads() {
   Actor actor;
-  worker_thread_
   this->actor->Stop();
   // TODO
 }
