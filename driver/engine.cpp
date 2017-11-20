@@ -48,8 +48,8 @@ void Engine::StartServerThreads() {
   }
 }
 void Engine::StartWorkerThreads() {
-  Actor actor;
-  actor->Start();
+
+
   // TODO
 }
 void Engine::StartMailbox() { this->mailbox_->Start(); }
@@ -79,8 +79,7 @@ void Engine::StopServerThreads() {
   }
 }
 void Engine::StopWorkerThreads() {
-  Actor actor;
-  actor->Stop();
+
   // TODO
 }
 void Engine::StopSender() { this->sender_->Stop(); }

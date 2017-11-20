@@ -27,6 +27,7 @@
         "__string": "cpp",
         "__locale": "cpp",
         "locale": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "condition_variable": "cpp"
     }
 }
