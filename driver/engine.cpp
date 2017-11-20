@@ -16,7 +16,6 @@
 namespace csci5570 {
 
 void Engine::StartEverything(int num_server_threads_per_node) {
-  // TODO
   /**
    * The flow of starting the engine:
    * 1. Create an id_mapper and a mailbox
@@ -42,7 +41,7 @@ void Engine::CreateMailbox() { this->mailbox_.reset(new Mailbox(node_, nodes_, t
 void Engine::StartServerThreads() {
   std::vector<uint32_t> server_thread_ids = id_mapper_->GetAllServerThreads();
   std::vector<uint32_t>::iterator it = server_thread_ids.begin();
-  for (;it!=server_thread_ids.end(); it++) {
+  for (; it != server_thread_ids.end(); it++) {
     std::unique_ptr<ServerThread> s_pt(new ServerThread(*it));
     s_pt->Start();
     this->server_thread_group_.push_back(std::move(s_pt));
@@ -51,16 +50,12 @@ void Engine::StartServerThreads() {
 void Engine::StartWorkerThreads() {
   // TODO
 }
-void Engine::StartMailbox() {
-  this->mailbox_->Start();
-  // TODO
-}
+void Engine::StartMailbox() { this->mailbox_->Start(); }
 void Engine::StartSender() {
   this->sender_.reset(new Sender(this->mailbox_.get()));
   this->sender_->Start();
 }
 void Engine::StopEverything() {
-  // TODO
   /**
    * The flow of stopping the engine:
    * 1. Stop the Sender
@@ -74,10 +69,9 @@ void Engine::StopEverything() {
   this->StopWorkerThreads();
 }
 void Engine::StopServerThreads() {
-  // TODO
-  int i=0;
-  while(i<this->server_thread_group_.size()){
-    std::unique_ptr<ServerThread> t=std::move(this->server_thread_group_[i]);
+  int i = 0;
+  while (i < this->server_thread_group_.size()) {
+    std::unique_ptr<ServerThread> t = std::move(this->server_thread_group_[i]);
     t->Stop();
     i++;
   }
@@ -85,24 +79,27 @@ void Engine::StopServerThreads() {
 void Engine::StopWorkerThreads() {
   // TODO
 }
-void Engine::StopSender() {
-  // TODO
-  this->sender_->Stop();
-}
-void Engine::StopMailbox() {
-  this->mailbox_->Stop();
-  // TODO
-}
+void Engine::StopSender() { this->sender_->Stop(); }
+void Engine::StopMailbox() { this->mailbox_->Stop(); }
 
-void Engine::Barrier() {
-  // TODO
-  this->mailbox_->Barrier();
-}
+void Engine::Barrier() { this->mailbox_->Barrier(); }
 
 WorkerSpec Engine::AllocateWorkers(const std::vector<WorkerAlloc>& worker_alloc) {
-  // TODO
-
-}
+  WorkerSpec worker_spec(worker_alloc);
+  // // {node_id, {worker_ids}}: {0, {0,1,2}}, {1, {3,4}}
+  // std::map<uint32_t, std::vector<uint32_t>> node_to_workers_;
+  auto node_to_workers = worker_spec.GetNodeToWorkers();
+  for (auto& workers : node_to_workers) {
+    for (auto worker : workers.second) {
+      // workers.first is the node is
+      // workers.second is the worker id
+      // id is the thread id
+      auto id = id_mapper_->AllocateWorkerThread(workers.first);
+      worker_spec.InsertWorkerIdThreadId(worker, id);
+    }
+  }
+  return worker_spec;
+}  // namespace csci5570
 
 void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_ids) {
   // TODO
@@ -147,9 +144,8 @@ void Engine::Run(const MLTask& task) {
 }
 
 void Engine::RegisterPartitionManager(uint32_t table_id, std::unique_ptr<AbstractPartitionManager> partition_manager) {
-  // TODO
-  this->partition_manager_map_.insert(
-      std::map<uint32_t, std::unique_ptr<AbstractPartitionManager>>::value_type(table_id,std::move(partition_manager)));
+  this->partition_manager_map_.insert(std::map<uint32_t, std::unique_ptr<AbstractPartitionManager>>::value_type(
+      table_id, std::move(partition_manager)));
 }
 
 }  // namespace csci5570
