@@ -75,6 +75,12 @@ void Engine::StopEverything() {
 }
 void Engine::StopServerThreads() {
   // TODO
+  int i=0;
+  while(i<this->server_thread_group_.size()){
+    std::unique_ptr<ServerThread> t=std::move(this->server_thread_group_[i]);
+    t->Stop();
+    i++;
+  }
 }
 void Engine::StopWorkerThreads() {
   // TODO
@@ -95,6 +101,7 @@ void Engine::Barrier() {
 
 WorkerSpec Engine::AllocateWorkers(const std::vector<WorkerAlloc>& worker_alloc) {
   // TODO
+
 }
 
 void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_ids) {
