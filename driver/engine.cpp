@@ -48,9 +48,11 @@ void Engine::StartServerThreads() {
   }
 }
 void Engine::StartWorkerThreads() {
-
-
-  // TODO
+  uint32_t worker_thread_id = id_mapper_->AllocateWorkerThread(node_.id);
+  worker_thread_.reset(new AbstractWorkerThread(worker_thread_id));
+  worker_thread_->Start();
+  
+  // TODO 
 }
 void Engine::StartMailbox() { this->mailbox_->Start(); }
 void Engine::StartSender() {
@@ -79,7 +81,6 @@ void Engine::StopServerThreads() {
   }
 }
 void Engine::StopWorkerThreads() {
-
   // TODO
 }
 void Engine::StopSender() { this->sender_->Stop(); }

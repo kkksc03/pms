@@ -28,6 +28,7 @@
         "__locale": "cpp",
         "locale": "cpp",
         "thread": "cpp",
-        "condition_variable": "cpp"
+        "condition_variable": "cpp",
+        "system_error": "cpp"
     }
 }
