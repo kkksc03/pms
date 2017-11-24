@@ -29,6 +29,7 @@
         "locale": "cpp",
         "thread": "cpp",
         "condition_variable": "cpp",
+<<<<<<< HEAD
         "atomic": "cpp",
         "cinttypes": "cpp",
         "cmath": "cpp",
@@ -69,5 +70,9 @@
         "xtr1common": "cpp",
         "xtree": "cpp",
         "xutility": "cpp"
+=======
+        "system_error": "cpp",
+        "memory": "cpp"
+>>>>>>> 2b4a96e77291c5db075f75a41aff89e76c573ac8
     }
 }

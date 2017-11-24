@@ -9,12 +9,14 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
+#include "worker/callback_runner.cpp"
+#include "worker/abstract_callback_runner.hpp"
 
 namespace csci5570 {
 
 class AbstractWorkerThread : public Actor {
  public:
-  AbstractWorkerThread(uint32_t worker_id,CallbackRunner* callback_runner) : Actor(worker_id){
+  AbstractWorkerThread(uint32_t worker_id,AbstractCallbackRunner* callback_runner) : Actor(worker_id){
     callback_runner_=callback_runner;
   }
 
@@ -22,9 +24,11 @@ class AbstractWorkerThread : public Actor {
  protected:
   void OnReceive(Message& msg){
     callback_runner_->AddResponse(msg.meta.recver,msg.meta.model_id,msg);
-    local_val.push_back(msg.data[1]);
-    }
-  CallbackRunner* callback_runner_;
+    for(int i=0;i<msg.data[1].size();i++){
+      local_val.push_back(msg.data[1][i]);
+    }  
+  }
+  AbstractCallbackRunner* callback_runner_;
   std::vector<float> local_val;
   void Main(){
     while(true){
