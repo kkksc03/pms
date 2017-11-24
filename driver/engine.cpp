@@ -51,8 +51,8 @@ void Engine::StartWorkerThreads() {
   uint32_t worker_thread_id = id_mapper_->AllocateWorkerThread(node_.id);
   worker_thread_.reset(new AbstractWorkerThread(worker_thread_id));
   worker_thread_->Start();
-  
-  // TODO 
+
+  // TODO
 }
 void Engine::StartMailbox() { this->mailbox_->Start(); }
 void Engine::StartSender() {
@@ -80,9 +80,7 @@ void Engine::StopServerThreads() {
     i++;
   }
 }
-void Engine::StopWorkerThreads() {
-  // TODO
-}
+void Engine::StopWorkerThreads() { worker_thread_->Stop(); }
 void Engine::StopSender() { this->sender_->Stop(); }
 void Engine::StopMailbox() { this->mailbox_->Stop(); }
 
@@ -137,14 +135,35 @@ void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_id
 }
 
 void Engine::Run(const MLTask& task) {
-  // TODO
   CHECK(task.IsSetup());
   auto worker_spec = AllocateWorkers(task.GetWorkerAlloc());
   // Init table
   const auto& tables = task.GetTables();
-  for (auto& table : tables)
+  for (auto& table : tables) {
     InitTable(table, worker_spec.GetAllThreadIds());
+  }
   Barrier();
+  if (worker_spec.HasLocalWorkers(node_.id)) {
+    const auto& local_threads = worker_spec.GetLocalThreads(node_.id);
+    const auto& local_workers = worker_spec.GetLocalWorkers(node_.id);
+    std::vector<std::thread> thread_group(local_threads.size());
+    std::map<uint32_t, AbstractPartitionManager*> partition_manager_map;
+    for (auto& table: tables) {
+      auto it = partition_manager_map_.find(table);
+      partition_manager_map[table] = it->second.get();
+    }
+    for (int i = 0; i < thread_group.size(); i++) {
+      mailbox_->RegisterQueue(local_threads[i], worker_thread_->GetWorkQueue());
+      Info info;
+      info.thread_id = local_threads[i];
+      info.worker_id = local_workers[i];
+      info.send_queue = sender_->GetMessageQueue();
+      info.partition_manager_map = partition_manager_map;
+      info.callback_runner = callback_runner_.get();
+      thread_group[i] = std::thread([&task, info]() {task.RunLambda(info);});
+    }
+  }
+  
 }
 
 void Engine::RegisterPartitionManager(uint32_t table_id, std::unique_ptr<AbstractPartitionManager> partition_manager) {
