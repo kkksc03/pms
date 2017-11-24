@@ -8,15 +8,32 @@
 #include <memory>
 #include <thread>
 #include <unordered_map>
+#include <vector>
 
 namespace csci5570 {
 
 class AbstractWorkerThread : public Actor {
  public:
-  AbstractWorkerThread(uint32_t worker_id) : Actor(worker_id) {}
+  AbstractWorkerThread(uint32_t worker_id,CallbackRunner* callback_runner) : Actor(worker_id){
+    callback_runner_=callback_runner;
+  }
 
+ 
  protected:
-  virtual void OnReceive(Message& msg) = 0;  // callback on receival of a message
+  void OnReceive(Message& msg){
+    callback_runner_->AddResponse(msg.meta.recver,msg.meta.model_id,msg);
+    local_val.push_back(msg.data[1]);
+    }
+  CallbackRunner* callback_runner_;
+  std::vector<float> local_val;
+  void Main(){
+    while(true){
+      Message msg;
+      work_queue_.WaitAndPop(&msg);
+      OnReceive(msg);
+    }
+  }
+    // callback on receival of a message
 
   // there may be other functions
   //   Wait() and Nofify() for telling when parameters are ready
