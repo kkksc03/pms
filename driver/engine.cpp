@@ -1,4 +1,4 @@
-#include "driver/engine.hpp"
+// #include "driver/engine.hpp"
 
 #include <vector>
 
@@ -50,10 +50,8 @@ void Engine::StartServerThreads() {
 }
 void Engine::StartWorkerThreads() {
   uint32_t worker_thread_id = id_mapper_->AllocateWorkerThread(node_.id);
-  worker_thread_.reset(new AbstractWorkerThread(worker_thread_id,this->callback_runner_.get()));
+  worker_thread_.reset(new AbstractWorkerThread(worker_thread_id, this->callback_runner_.get()));
   worker_thread_->Start();
-
-  // TODO
 }
 void Engine::StartMailbox() { this->mailbox_->Start(); }
 void Engine::StartSender() {
@@ -105,7 +103,6 @@ WorkerSpec Engine::AllocateWorkers(const std::vector<WorkerAlloc>& worker_alloc)
 }  // namespace csci5570
 
 void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_ids) {
-  // TODO
   CHECK(id_mapper_);
   std::vector<uint32_t> local_server = id_mapper_->GetServerThreadsForId(node_.id);
   int count = local_server.size();
@@ -149,7 +146,7 @@ void Engine::Run(const MLTask& task) {
     const auto& local_workers = worker_spec.GetLocalWorkers(node_.id);
     std::vector<std::thread> thread_group(local_threads.size());
     std::map<uint32_t, AbstractPartitionManager*> partition_manager_map;
-    for (auto& table: tables) {
+    for (auto& table : tables) {
       auto it = partition_manager_map_.find(table);
       partition_manager_map[table] = it->second.get();
     }
@@ -161,10 +158,9 @@ void Engine::Run(const MLTask& task) {
       info.send_queue = sender_->GetMessageQueue();
       info.partition_manager_map = partition_manager_map;
       info.callback_runner = callback_runner_.get();
-      thread_group[i] = std::thread([&task, info]() {task.RunLambda(info);});
+      thread_group[i] = std::thread([&task, info]() { task.RunLambda(info); });
     }
   }
-  
 }
 
 void Engine::RegisterPartitionManager(uint32_t table_id, std::unique_ptr<AbstractPartitionManager> partition_manager) {
