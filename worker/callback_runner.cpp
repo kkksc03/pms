@@ -8,9 +8,9 @@
 
 namespace csci5570 {
 
-class CallbackRunner: public AbstractCallbackRunner {
+class callbackRunner: public AbstractCallbackRunner {
  public:
-  CallbackRunner(){}
+  callbackRunner(){}
 
   void RegisterRecvHandle(uint32_t app_thread_id, uint32_t model_id,
                                   const std::function<void(Message&)>& recv_handle) override{
