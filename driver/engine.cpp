@@ -12,7 +12,7 @@
 #include "server/server_thread.hpp"
 #include "worker/abstract_callback_runner.hpp"
 // #include "worker/callback_runner.cpp"
-#include "worker/worker_thread.hpp"
+// #include "worker/worker_thread.hpp"
 
 namespace csci5570 {
 
@@ -85,7 +85,7 @@ void Engine::StopServerThreads() {
 }
 void Engine::StopWorkerThreads() {
    Message msg;
-   msg.meta.flag==Flag::kExit;
+   msg.meta.flag=Flag::kExit;
    auto* workerqueue=worker_thread_->GetWorkQueue();
    workerqueue->Push(msg);
    worker_thread_->Stop();
