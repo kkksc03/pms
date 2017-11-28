@@ -75,11 +75,21 @@ void Engine::StopServerThreads() {
   int i = 0;
   while (i < this->server_thread_group_.size()) {
     std::unique_ptr<ServerThread> t = std::move(this->server_thread_group_[i]);
+    Message msg;
+    msg.meta.flag=Flag::kExit;
+    auto* workerqueue=t->GetWorkQueue();
+    workerqueue->Push(msg);
     t->Stop();
     i++;
   }
 }
-void Engine::StopWorkerThreads() { worker_thread_->Stop(); }
+void Engine::StopWorkerThreads() {
+   Message msg;
+   msg.meta.flag==Flag::kExit;
+   auto* workerqueue=worker_thread_->GetWorkQueue();
+   workerqueue->Push(msg);
+   worker_thread_->Stop();
+ }
 void Engine::StopSender() { this->sender_->Stop(); }
 void Engine::StopMailbox() { this->mailbox_->Stop(); }
 

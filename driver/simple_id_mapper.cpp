@@ -79,6 +79,7 @@ std::vector<uint32_t> SimpleIdMapper::GetAllServerThreads() {
     for (; it != this->node2server_[i].end(); it++) {
       tmp.push_back(*it);
     }
+    i++;
   }
   return tmp;
 }
