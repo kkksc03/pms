@@ -76,20 +76,20 @@ void Engine::StopServerThreads() {
   while (i < this->server_thread_group_.size()) {
     std::unique_ptr<ServerThread> t = std::move(this->server_thread_group_[i]);
     Message msg;
-    msg.meta.flag=Flag::kExit;
-    auto* workerqueue=t->GetWorkQueue();
+    msg.meta.flag = Flag::kExit;
+    auto* workerqueue = t->GetWorkQueue();
     workerqueue->Push(msg);
     t->Stop();
     i++;
   }
 }
 void Engine::StopWorkerThreads() {
-   Message msg;
-   msg.meta.flag=Flag::kExit;
-   auto* workerqueue=worker_thread_->GetWorkQueue();
-   workerqueue->Push(msg);
-   worker_thread_->Stop();
- }
+  Message msg;
+  msg.meta.flag = Flag::kExit;
+  auto* workerqueue = worker_thread_->GetWorkQueue();
+  workerqueue->Push(msg);
+  worker_thread_->Stop();
+}
 void Engine::StopSender() { this->sender_->Stop(); }
 void Engine::StopMailbox() { this->mailbox_->Stop(); }
 
@@ -115,13 +115,16 @@ WorkerSpec Engine::AllocateWorkers(const std::vector<WorkerAlloc>& worker_alloc)
 void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_ids) {
   CHECK(id_mapper_);
   std::vector<uint32_t> local_server = id_mapper_->GetServerThreadsForId(node_.id);
+  LOG(INFO) << "Get server thread for id complete";
   int count = local_server.size();
   if (count == 0)
     return;
+
   auto id = id_mapper_->AllocateWorkerThread(node_.id);
+  LOG(INFO) << "Get id complete";
   ThreadsafeQueue<Message> queue;
   mailbox_->RegisterQueue(id, &queue);
-
+  LOG(INFO) << "Register complete";
   Message reset_msg;
   reset_msg.meta.flag = Flag::kResetWorkerInModel;
   reset_msg.meta.model_id = table_id;
@@ -138,36 +141,37 @@ void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_id
     CHECK(reply.meta.model_id == table_id);
     --count;
   }
+  LOG(INFO) << "Reply message complete";
   mailbox_->RegisterQueue(id, &queue);
   id_mapper_->DeallocateWorkerThread(node_.id, id);
 }
 
 void Engine::Run(const MLTask& task) {
   CHECK(task.IsSetup());
-  
+
   auto worker_spec = AllocateWorkers(task.GetWorkerAlloc());
-  LOG(INFO)<<"Get worker allocation complete";
+  LOG(INFO) << "Get worker allocation complete";
   // Init table
   const auto& tables = task.GetTables();
-  LOG(INFO)<<"Get table complete";
+  LOG(INFO) << "Get table complete";
   for (auto& table : tables) {
     InitTable(table, worker_spec.GetAllThreadIds());
   }
-  LOG(INFO)<<"Init table complete";
+  LOG(INFO) << "Init table complete";
   Barrier();
-  LOG(INFO)<<"Barrier complete";
+  LOG(INFO) << "Barrier complete";
   if (worker_spec.HasLocalWorkers(node_.id)) {
     const auto& local_threads = worker_spec.GetLocalThreads(node_.id);
-    LOG(INFO)<<"Get local complete";
+    LOG(INFO) << "Get local complete";
     const auto& local_workers = worker_spec.GetLocalWorkers(node_.id);
-    LOG(INFO)<<"Get worker complete";
+    LOG(INFO) << "Get worker complete";
     std::vector<std::thread> thread_group(local_threads.size());
     std::map<uint32_t, AbstractPartitionManager*> partition_manager_map;
     for (auto& table : tables) {
       auto it = partition_manager_map_.find(table);
       partition_manager_map[table] = it->second.get();
     }
-    LOG(INFO)<<"Partition complete";
+    LOG(INFO) << "Partition complete";
     for (int i = 0; i < thread_group.size(); i++) {
       mailbox_->RegisterQueue(local_threads[i], worker_thread_->GetWorkQueue());
       Info info;
@@ -178,7 +182,6 @@ void Engine::Run(const MLTask& task) {
       info.callback_runner = callback_runner_.get();
       thread_group[i] = std::thread([&task, info]() { task.RunLambda(info); });
     }
-
   }
 }
 
