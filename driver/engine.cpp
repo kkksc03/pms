@@ -134,6 +134,7 @@ void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_id
     reset_msg.meta.recver = server;
     sender_->GetMessageQueue()->Push(reset_msg);
   }
+  LOG(INFO) << "Ready to send message";
   Message reply;
   while (count > 0) {
     queue.WaitAndPop(&reply);
