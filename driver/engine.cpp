@@ -149,6 +149,7 @@ void Engine::Run(const MLTask& task) {
   LOG(INFO)<<"Get worker allocation complete";
   // Init table
   const auto& tables = task.GetTables();
+  LOG(INFO)<<"Get table complete";
   for (auto& table : tables) {
     InitTable(table, worker_spec.GetAllThreadIds());
   }
@@ -177,7 +178,7 @@ void Engine::Run(const MLTask& task) {
       info.callback_runner = callback_runner_.get();
       thread_group[i] = std::thread([&task, info]() { task.RunLambda(info); });
     }
-    
+
   }
 }
 
