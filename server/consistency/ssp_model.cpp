@@ -5,7 +5,6 @@ namespace csci5570 {
 
 SSPModel::SSPModel(uint32_t model_id, std::unique_ptr<AbstractStorage>&& storage_ptr, int staleness,
                    ThreadsafeQueue<Message>* reply_queue) {
-  // TODO
   model_id_ = model_id;
   staleness_ = staleness;
   reply_queue_ = reply_queue;
@@ -13,7 +12,6 @@ SSPModel::SSPModel(uint32_t model_id, std::unique_ptr<AbstractStorage>&& storage
 }
 
 void SSPModel::Clock(Message& msg) {
-  // TODO
   int tid = msg.meta.sender;
   if (progress_tracker_.CheckThreadValid(tid)) {
   	int temp = progress_tracker_.AdvanceAndGetChangedMinClock(tid);
@@ -49,17 +47,15 @@ void SSPModel::Get(Message& msg) {
 }
 
 int SSPModel::GetProgress(int tid) {
-  // TODO
    return progress_tracker_.GetProgress(tid);
 }
 
 int SSPModel::GetPendingSize(int progress) {
-  // TODO
    return buffer_.Size(progress);
 }
 
 void SSPModel::ResetWorker(Message& msg) {
-  // TODO
+
    msg.meta.flag = Flag::kResetWorkerInModel;
   third_party::SArray<int> tidstemp;
   tidstemp = msg.data[0];

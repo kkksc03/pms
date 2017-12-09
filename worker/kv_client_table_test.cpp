@@ -56,7 +56,7 @@ class FakeCallbackRunner : public AbstractCallbackRunner {
                           const std::function<void(Message&)>& recv_handle) override {
     EXPECT_EQ(app_thread_id, kTestAppThreadId);
     EXPECT_EQ(model_id, kTestModelId);
-    recv_handle_ = recv_handle;
+    recv_handle_ = recv_handle; 
   }
   void RegisterRecvFinishHandle(uint32_t app_thread_id, uint32_t model_id,
                                 const std::function<void()>& recv_finish_handle) override {

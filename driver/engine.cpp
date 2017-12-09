@@ -40,13 +40,31 @@ void Engine::CreateIdMapper(int num_server_threads_per_node) {
 }
 void Engine::CreateMailbox() { this->mailbox_.reset(new Mailbox(node_, nodes_, this->id_mapper_.get())); }
 void Engine::StartServerThreads() {
-  std::vector<uint32_t> server_thread_ids = id_mapper_->GetAllServerThreads();
+  std::vector<uint32_t> server_thread_ids = id_mapper_->GetServerThreadsForId(node_.id);
   std::vector<uint32_t>::iterator it = server_thread_ids.begin();
   for (; it != server_thread_ids.end(); it++) {
     std::unique_ptr<ServerThread> s_pt(new ServerThread(*it));
-    s_pt->Start();
+    mailbox_->RegisterQueue(*it, s_pt->GetWorkQueue()) s_pt->Start();
     this->server_thread_group_.push_back(std::move(s_pt));
   }
+
+  // // TODO
+  // std::vector<uint32_t> server_threads_id = id_mapper_->GetServerThreadsForId(node_.id);
+  // for (int i = 0; i < server_threads_id.size(); i++) {
+  //   //ServerThread server_thread(server_threads_id[i]);
+  //   //server_thread_group_.push_back(std::move(server_thread));
+
+  //   // server_thread_group_.emplace_back(server_threads_id[i]);
+
+  //   // std::unique_ptr<ServerThread> server_thread(new ServerThread(server_threads_id[i]));
+  //   // server_thread->Start();
+  //   // server_thread_group_.push_back(server_thread);
+
+  //   server_thread_group_.emplace_back(new ServerThread(server_threads_id[i]));
+  // }
+  // for (int i = 0; i < server_thread_group_.size(); i++) {
+  //   server_thread_group_[i]->Start();
+  // }
 }
 void Engine::StartWorkerThreads() {
   uint32_t worker_thread_id = id_mapper_->AllocateWorkerThread(node_.id);
