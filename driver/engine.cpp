@@ -40,10 +40,11 @@ void Engine::CreateIdMapper(int num_server_threads_per_node) {
 }
 void Engine::CreateMailbox() { this->mailbox_.reset(new Mailbox(node_, nodes_, this->id_mapper_.get())); }
 void Engine::StartServerThreads() {
-  std::vector<uint32_t> server_thread_ids = id_mapper_->GetAllServerThreads();
+  std::vector<uint32_t> server_thread_ids = id_mapper_->GetServerThreadsForId(node_);
   std::vector<uint32_t>::iterator it = server_thread_ids.begin();
   for (; it != server_thread_ids.end(); it++) {
     std::unique_ptr<ServerThread> s_pt(new ServerThread(*it));
+    mailbox_->RegisterQueue(*it,s_pt->GetWorkQueue())
     s_pt->Start();
     this->server_thread_group_.push_back(std::move(s_pt));
   }
@@ -138,7 +139,7 @@ void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_id
     CHECK(reply.meta.model_id == table_id);
     --count;
   }
-  mailbox_->RegisterQueue(id, &queue);
+  // mailbox_->RegisterQueue(id, &queue);
   id_mapper_->DeallocateWorkerThread(node_.id, id);
 }
 
@@ -151,26 +152,8 @@ void Engine::Run(const MLTask& task) {
     InitTable(table, worker_spec.GetAllThreadIds());
   }
   Barrier();
-  if (worker_spec.HasLocalWorkers(node_.id)) {
-    const auto& local_threads = worker_spec.GetLocalThreads(node_.id);
-    const auto& local_workers = worker_spec.GetLocalWorkers(node_.id);
-    std::vector<std::thread> thread_group(local_threads.size());
-    std::map<uint32_t, AbstractPartitionManager*> partition_manager_map;
-    for (auto& table : tables) {
-      auto it = partition_manager_map_.find(table);
-      partition_manager_map[table] = it->second.get();
-    }
-    for (int i = 0; i < thread_group.size(); i++) {
-      mailbox_->RegisterQueue(local_threads[i], worker_thread_->GetWorkQueue());
-      Info info;
-      info.thread_id = local_threads[i];
-      info.worker_id = local_workers[i];
-      info.send_queue = sender_->GetMessageQueue();
-      info.partition_manager_map = partition_manager_map;
-      info.callback_runner = callback_runner_.get();
-      thread_group[i] = std::thread([&task, info]() { task.RunLambda(info); });
-    }
-  }
+  Info info;
+  info.thread_id=
 }
 
 void Engine::RegisterPartitionManager(uint32_t table_id, std::unique_ptr<AbstractPartitionManager> partition_manager) {
