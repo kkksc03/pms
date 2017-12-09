@@ -29,13 +29,11 @@ void SSPModel::Clock(Message& msg) {
 }
 
 void SSPModel::Add(Message& msg) {
-  // TODO
   storage_->Add(msg);
 }
 
 void SSPModel::Get(Message& msg) {
-  // TODO
-   int tid = msg.meta.sender;
+  int tid = msg.meta.sender;
   int min_clock_ = progress_tracker_.GetMinClock();
   int progress = GetProgress(tid);
   if((progress - min_clock_) > staleness_){

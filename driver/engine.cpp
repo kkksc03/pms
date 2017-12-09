@@ -40,19 +40,11 @@ void Engine::CreateIdMapper(int num_server_threads_per_node) {
 }
 void Engine::CreateMailbox() { this->mailbox_.reset(new Mailbox(node_, nodes_, this->id_mapper_.get())); }
 void Engine::StartServerThreads() {
-<<<<<<< HEAD
-  std::vector<uint32_t> server_thread_ids = id_mapper_->GetServerThreadsForId(node_);
-  std::vector<uint32_t>::iterator it = server_thread_ids.begin();
-  for (; it != server_thread_ids.end(); it++) {
-    std::unique_ptr<ServerThread> s_pt(new ServerThread(*it));
-    mailbox_->RegisterQueue(*it,s_pt->GetWorkQueue())
-=======
   std::vector<uint32_t> server_thread_ids = id_mapper_->GetServerThreadsForId(node_.id);
   std::vector<uint32_t>::iterator it = server_thread_ids.begin();
   for (; it != server_thread_ids.end(); it++) {
     std::unique_ptr<ServerThread> s_pt(new ServerThread(*it));
     mailbox_->RegisterQueue(*it, s_pt->GetWorkQueue());
->>>>>>> 6e5eea23b439c4d24a5699779f33eb110338f500
     s_pt->Start();
     this->server_thread_group_.push_back(std::move(s_pt));
   }
@@ -169,10 +161,7 @@ void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_id
     CHECK(reply.meta.model_id == table_id);
     --count;
   }
-<<<<<<< HEAD
-=======
   LOG(INFO) << "Reply message complete";
->>>>>>> 986db19551cc7cff3459523f77b440b7da235f6e
   // mailbox_->RegisterQueue(id, &queue);
   id_mapper_->DeallocateWorkerThread(node_.id, id);
 }
@@ -190,10 +179,6 @@ void Engine::Run(const MLTask& task) {
   }
   LOG(INFO) << "Init table complete";
   Barrier();
-<<<<<<< HEAD
-  Info info;
-  info.thread_id=
-=======
   LOG(INFO) << "Barrier complete";
   if (worker_spec.HasLocalWorkers(node_.id)) {
     const auto& local_threads = worker_spec.GetLocalThreads(node_.id);
@@ -218,7 +203,6 @@ void Engine::Run(const MLTask& task) {
       thread_group[i] = std::thread([&task, info]() { task.RunLambda(info); });
     }
   }
->>>>>>> 986db19551cc7cff3459523f77b440b7da235f6e
 }
 
 void Engine::RegisterPartitionManager(uint32_t table_id, std::unique_ptr<AbstractPartitionManager> partition_manager) {
