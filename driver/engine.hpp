@@ -17,6 +17,7 @@
 #include "server/consistency/asp_model.hpp"
 #include "base/range_partition_manager.hpp"
 
+
 namespace csci5570 {
 
 enum class ModelType { SSP, BSP, ASP };
@@ -107,22 +108,27 @@ class Engine {
   template <typename Val>
   uint32_t CreateTable(ModelType model_type, StorageType storage_type, int model_staleness = 0) {
     std::unique_ptr<AbstractPartitionManager> pm;
-    pm.reset(new RangePartitionManager({0},{0,99}));
+    pm.reset(new RangePartitionManager({0},{{0,99}}));
     partition_manager_map_.insert(make_pair(model_count_,std::move(pm)));
     // ThreadsafeQueue<Message> reply_queue;
     std::unique_ptr<AbstractStorage> storage;
+    std::unique_ptr<AbstractModel> model;
     switch(storage_type){
       case StorageType::Map: storage.reset(new MapStorage<Val>()); break;
     }
     switch(model_type)
     {
-      case ModelType::ASP: server_id=id_mapper_->node2server_(node_);
-                           for (auto server : server_thread_group_){
-                             if(server->id_==servere_id){
-                               server->RegisterModel(model_count_,new ASPModel (model_count_,std::move(storage),&sender_->GetMessageQueue()));
-                             }
-                           }
-                           break;
+      case ModelType::ASP: std::vector<uint32_t> server_id=id_mapper_->GetServerThreadsForId(node_.id);
+                           for (auto severid : server_id){
+                            for (int i=0;i<server_thread_group_.size();i++){
+                              if(server_thread_group_[i]->GetId()==severid){
+                                 model.reset(new ASPModel(model_count_,std::move(storage),sender_->GetMessageQueue()));
+                                 server_thread_group_[i]->RegisterModel(model_count_,std::move(model));
+                                 break;
+                               }
+                            }
+                           }; break;
+                           
     }
     return model_count_++;
   }
