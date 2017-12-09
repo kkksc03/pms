@@ -15,6 +15,7 @@
 #include "server/map_storage.hpp"
 #include "server/abstract_storage.hpp"
 #include "server/consistency/asp_model.hpp"
+#include "server/consistency/ssp_model.hpp"
 #include "base/range_partition_manager.hpp"
 
 
@@ -116,13 +117,24 @@ class Engine {
     switch(storage_type){
       case StorageType::Map: storage.reset(new MapStorage<Val>()); break;
     }
+    std::vector<uint32_t> server_id;
     switch(model_type)
     {
-      case ModelType::ASP: std::vector<uint32_t> server_id=id_mapper_->GetServerThreadsForId(node_.id);
+      case ModelType::ASP: server_id=id_mapper_->GetServerThreadsForId(node_.id);
                            for (auto severid : server_id){
                             for (int i=0;i<server_thread_group_.size();i++){
                               if(server_thread_group_[i]->GetId()==severid){
                                  model.reset(new ASPModel(model_count_,std::move(storage),sender_->GetMessageQueue()));
+                                 server_thread_group_[i]->RegisterModel(model_count_,std::move(model));
+                                 break;
+                               }
+                            }
+                           };  break;
+      case ModelType::SSP: server_id=id_mapper_->GetServerThreadsForId(node_.id);
+                           for (auto severid : server_id){
+                            for (int i=0;i<server_thread_group_.size();i++){
+                              if(server_thread_group_[i]->GetId()==severid){
+                                 model.reset(new SSPModel(model_count_,std::move(storage),model_staleness,sender_->GetMessageQueue()));
                                  server_thread_group_[i]->RegisterModel(model_count_,std::move(model));
                                  break;
                                }
