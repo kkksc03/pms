@@ -44,7 +44,8 @@ void Engine::StartServerThreads() {
   std::vector<uint32_t>::iterator it = server_thread_ids.begin();
   for (; it != server_thread_ids.end(); it++) {
     std::unique_ptr<ServerThread> s_pt(new ServerThread(*it));
-    mailbox_->RegisterQueue(*it, s_pt->GetWorkQueue()) s_pt->Start();
+    mailbox_->RegisterQueue(*it, s_pt->GetWorkQueue());
+    s_pt->Start();
     this->server_thread_group_.push_back(std::move(s_pt));
   }
 
