@@ -207,6 +207,7 @@ void Engine::Run(const MLTask& task) {
     for (auto& th : thread_group) {
       th.join();
     }
+    LOG(INFO)<<"End join";
   }
 }
 
