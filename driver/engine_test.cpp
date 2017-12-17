@@ -131,19 +131,19 @@ TEST_F(TestEngine, KVClientTableMapStorage) {
   task.SetTables({kTableId});     // Use table 0
   task.SetLambda([kTableId](const Info& info) {
     LOG(INFO) << "Hi";
-    LOG(INFO) << info.DebugString();
-    ASSERT_TRUE(info.partition_manager_map.find(kTableId) != info.partition_manager_map.end());
-    KVClientTable<double> table(info.thread_id, kTableId, info.send_queue,
-                                info.partition_manager_map.find(kTableId)->second, info.callback_runner);
-    for (int i = 0; i < 5; ++i) {
-      std::vector<Key> keys{1};
-      std::vector<double> vals{0.5};
-      table.Add(keys, vals);
-      std::vector<double> ret;
-      table.Get(keys, &ret);
-      EXPECT_EQ(ret.size(), 1);
-      LOG(INFO) << ret[0];
-    }
+    // LOG(INFO) << info.DebugString();
+    // ASSERT_TRUE(info.partition_manager_map.find(kTableId) != info.partition_manager_map.end());
+    // KVClientTable<double> table(info.thread_id, kTableId, info.send_queue,
+    //                             info.partition_manager_map.find(kTableId)->second, info.callback_runner);
+    // for (int i = 0; i < 5; ++i) {
+    //   std::vector<Key> keys{1};
+    //   std::vector<double> vals{0.5};
+    //   table.Add(keys, vals);
+    //   std::vector<double> ret;
+    //   table.Get(keys, &ret);
+    //   EXPECT_EQ(ret.size(), 1);
+    //   LOG(INFO) << ret[0];
+    // }
   });
   engine.Run(task);
 
