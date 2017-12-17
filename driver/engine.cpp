@@ -202,9 +202,9 @@ void Engine::Run(const MLTask& task) {
       info.callback_runner = callback_runner_.get();
       thread_group[i] = std::thread([&task, info]() { task.RunLambda(info); });
     }
-  }
-  for (auto& th : thread_group) {
-    th.join();
+    for (auto& th : thread_group) {
+      th.join();
+    }
   }
 }
 
