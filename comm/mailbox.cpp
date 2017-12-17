@@ -76,6 +76,9 @@ void Mailbox::CloseSockets() {
   exit_msg.meta.recver = node_.id;
   exit_msg.meta.flag = Flag::kExit;
   for (auto& queue : queue_map_) {
+    if(queue==NULL){
+      continue;
+    }
     queue.second->Push(exit_msg);
   }
   LOG(INFO)<<"Close scokets";
