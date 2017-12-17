@@ -169,7 +169,7 @@ void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_id
     --count;
   }
   LOG(INFO) << "Reply message complete";
-  mailbox_->DeRegisterQueue(id, &queue);
+  mailbox_->DeRegisterQueue(id);
   id_mapper_->DeallocateWorkerThread(node_.id, id);
 }
 
@@ -210,11 +210,11 @@ void Engine::Run(const MLTask& task) {
       thread_group[i] = std::thread([&task, info]() { task.RunLambda(info); });
       // thread_group[i].join();
     }
-    LOG(INFO)<<"Wait for join";
+    LOG(INFO) << "Wait for join";
     for (auto& th : thread_group) {
       th.join();
     }
-    LOG(INFO)<<"End join";
+    LOG(INFO) << "End join";
   }
 }
 

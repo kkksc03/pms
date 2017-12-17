@@ -278,6 +278,6 @@ void Mailbox::Barrier() {
   barrier_count_ -= nodes_.size();
 }
 
-void Mailbox::DeRegisterQueue(id, &queue) { this->queue_map_.erase(id); }
+void Mailbox::DeRegisterQueue(int id) { this->queue_map_.erase(id); }
 
 }  // namespace csci5570

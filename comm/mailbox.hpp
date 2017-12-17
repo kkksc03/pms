@@ -30,7 +30,7 @@ class Mailbox : public AbstractMailbox {
   void StartReceiving();
   void StopReceiving();
   void CloseSockets();
-  void DeRegisterQueue(id,&queue);
+  void DeRegisterQueue(int id);
  private:
   void Connect(const Node& node);
   void Bind(const Node& node);
