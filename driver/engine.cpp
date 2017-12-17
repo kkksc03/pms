@@ -201,10 +201,11 @@ void Engine::Run(const MLTask& task) {
       info.partition_manager_map = partition_manager_map;
       info.callback_runner = callback_runner_.get();
       thread_group[i] = std::thread([&task, info]() { task.RunLambda(info); });
+      thread_group[i].join();
     }
-    for (auto& th : thread_group) {
-      th.join();
-    }
+    // for (auto& th : thread_group) {
+    //   th.join();
+    // }
   }
 }
 
