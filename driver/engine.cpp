@@ -88,6 +88,7 @@ void Engine::StopEverything() {
   LOG(INFO) << "1";
   this->StopSender();
   LOG(INFO) << "2";
+  Barrier()
   this->StopMailbox();
   LOG(INFO) << "3";
   this->StopServerThreads();
