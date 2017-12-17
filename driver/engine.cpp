@@ -203,6 +203,7 @@ void Engine::Run(const MLTask& task) {
       thread_group[i] = std::thread([&task, info]() { task.RunLambda(info); });
       // thread_group[i].join();
     }
+    LOG(INFO)<<"Wait for join";
     for (auto& th : thread_group) {
       th.join();
     }
