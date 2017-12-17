@@ -111,7 +111,6 @@ class Engine {
     std::unique_ptr<AbstractPartitionManager> pm;
     pm.reset(new RangePartitionManager({0},{{0,99}}));
     partition_manager_map_.insert(make_pair(model_count_,std::move(pm)));
-    // ThreadsafeQueue<Message> reply_queue;
     std::unique_ptr<AbstractStorage> storage;
     std::unique_ptr<AbstractModel> model;
     switch(storage_type){
@@ -120,26 +119,14 @@ class Engine {
     std::vector<uint32_t> server_id;
     switch(model_type)
     {
-      case ModelType::ASP: server_id=id_mapper_->GetServerThreadsForId(node_.id);
-                           for (auto severid : server_id){
-                            for (int i=0;i<server_thread_group_.size();i++){
-                              if(server_thread_group_[i]->GetId()==severid){
+      case ModelType::ASP: for (int i=0;i<server_thread_group_.size();i++){
                                  model.reset(new ASPModel(model_count_,std::move(storage),sender_->GetMessageQueue()));
                                  server_thread_group_[i]->RegisterModel(model_count_,std::move(model));
-                                 break;
-                               }
-                            }
-                           };  break;
-      case ModelType::SSP: server_id=id_mapper_->GetServerThreadsForId(node_.id);
-                           for (auto severid : server_id){
-                            for (int i=0;i<server_thread_group_.size();i++){
-                              if(server_thread_group_[i]->GetId()==severid){
+                            };  break;
+      case ModelType::SSP: for (int i=0;i<server_thread_group_.size();i++){
                                  model.reset(new SSPModel(model_count_,std::move(storage),model_staleness,sender_->GetMessageQueue()));
                                  server_thread_group_[i]->RegisterModel(model_count_,std::move(model));
-                                 break;
-                               }
-                            }
-                           };  break;
+                            };  break;
                            
     }
     return model_count_++;
