@@ -140,9 +140,9 @@ TEST_F(TestEngine, KVClientTableMapStorage) {
       std::vector<double> vals{0.5};
       table.Add(keys, vals);
       std::vector<double> ret;
-      // table.Get(keys, &ret);
-      // EXPECT_EQ(ret.size(), 1);
-      // LOG(INFO) << ret[0];
+      table.Get(keys, &ret);
+      EXPECT_EQ(ret.size(), 1);
+      LOG(INFO) << ret[0];
     }
   });
   engine.Run(task);
