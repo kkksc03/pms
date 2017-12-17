@@ -15,14 +15,14 @@ inline void FreeData(void* data, void* hint) {
 }
 
 Mailbox::Mailbox(const Node& node, const std::vector<Node>& nodes, AbstractIdMapper* id_mapper)
-  : node_(node), nodes_(nodes), id_mapper_(id_mapper) {
+    : node_(node), nodes_(nodes), id_mapper_(id_mapper) {
   // Do some checks
   CHECK(nodes_.size());
   CHECK(std::find(nodes_.begin(), nodes_.end(), node_) != nodes_.end());
   CHECK_NOTNULL(id_mapper_);
   // Check for uniqueness
-  for (int i = 0; i < nodes.size(); ++ i) {
-    for (int j = 0; j < nodes.size(); ++ j) {
+  for (int i = 0; i < nodes.size(); ++i) {
+    for (int j = 0; j < nodes.size(); ++j) {
       if (i != j) {
         CHECK_NE(nodes[i].id, nodes[j].id);
       }
@@ -50,9 +50,7 @@ void Mailbox::ConnectAndBind() {
   VLOG(1) << "Finished connecting";
 }
 
-void Mailbox::StartReceiving() {
-  receiver_thread_ = std::thread(&Mailbox::Receiving, this);
-}
+void Mailbox::StartReceiving() { receiver_thread_ = std::thread(&Mailbox::Receiving, this); }
 
 void Mailbox::Stop() {
   StopReceiving();
@@ -71,21 +69,21 @@ void Mailbox::StopReceiving() {
 
 void Mailbox::CloseSockets() {
   // Kill all the registered threads
-  LOG(INFO)<<"Kill all";
+  LOG(INFO) << "Kill all";
   Message exit_msg;
   exit_msg.meta.recver = node_.id;
   exit_msg.meta.flag = Flag::kExit;
   for (auto& queue : queue_map_) {
-    if(*(queue.second)==NULL){
+    if (*(queue.second) == NULL) {
       continue;
     }
     queue.second->Push(exit_msg);
   }
-  LOG(INFO)<<"Close scokets";
+  LOG(INFO) << "Close scokets";
   // close sockets
   int linger = -1;  // infinite linger period. Wait for all pending messages to be sent.
   int rc = zmq_setsockopt(receiver_, ZMQ_LINGER, &linger, sizeof(linger));
-  LOG(INFO)<<"666";
+  LOG(INFO) << "666";
   CHECK(rc == 0 || errno == ETERM);
   CHECK_EQ(zmq_close(receiver_), 0);
   for (auto& it : senders_) {
@@ -93,7 +91,7 @@ void Mailbox::CloseSockets() {
     CHECK(rc == 0 || errno == ETERM);
     CHECK_EQ(zmq_close(it.second), 0);
   }
-  LOG(INFO)<<"Ghost";
+  LOG(INFO) << "Ghost";
   zmq_ctx_destroy(context_);
 }
 
@@ -141,8 +139,7 @@ void Mailbox::Receiving() {
       std::unique_lock<std::mutex> lk(mu_);
       barrier_count_ += 1;
       if (barrier_count_ == nodes_.size()) {
-        VLOG(1) << "Collected " << nodes_.size() << " barrier, Node:"
-          << node_.id << " unblocking main thread";
+        VLOG(1) << "Collected " << nodes_.size() << " barrier, Node:" << node_.id << " unblocking main thread";
         barrier_cond_.notify_one();
       }
     } else {
@@ -280,5 +277,7 @@ void Mailbox::Barrier() {
   barrier_cond_.wait(lk, [this]() { return barrier_count_ >= nodes_.size(); });
   barrier_count_ -= nodes_.size();
 }
+
+void Mailbox::DeRegisterQueue(id, &queue) { this->queue_map_.erase(id); }
 
 }  // namespace csci5570

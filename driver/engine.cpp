@@ -169,7 +169,7 @@ void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_id
     --count;
   }
   LOG(INFO) << "Reply message complete";
-  // mailbox_->RegisterQueue(id, &queue);
+  mailbox_->DeRegisterQueue(id, &queue);
   id_mapper_->DeallocateWorkerThread(node_.id, id);
 }
 
