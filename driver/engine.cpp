@@ -203,6 +203,9 @@ void Engine::Run(const MLTask& task) {
       thread_group[i] = std::thread([&task, info]() { task.RunLambda(info); });
     }
   }
+  for (auto& th : thread_group) {
+    th.join();
+  }
 }
 
 void Engine::RegisterPartitionManager(uint32_t table_id, std::unique_ptr<AbstractPartitionManager> partition_manager) {
