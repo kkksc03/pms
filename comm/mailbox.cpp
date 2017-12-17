@@ -69,7 +69,7 @@ void Mailbox::StopReceiving() {
 
 void Mailbox::CloseSockets() {
   // Kill all the registered threads
-  LOG(INFO) << "Kill all";
+  // LOG(INFO) << "Kill all";
   Message exit_msg;
   exit_msg.meta.recver = node_.id;
   exit_msg.meta.flag = Flag::kExit;
@@ -79,11 +79,10 @@ void Mailbox::CloseSockets() {
     // }
     queue.second->Push(exit_msg);
   }
-  LOG(INFO) << "Close scokets";
+  // LOG(INFO) << "Close scokets";
   // close sockets
   int linger = -1;  // infinite linger period. Wait for all pending messages to be sent.
   int rc = zmq_setsockopt(receiver_, ZMQ_LINGER, &linger, sizeof(linger));
-  LOG(INFO) << "666";
   CHECK(rc == 0 || errno == ETERM);
   CHECK_EQ(zmq_close(receiver_), 0);
   for (auto& it : senders_) {
@@ -91,7 +90,6 @@ void Mailbox::CloseSockets() {
     CHECK(rc == 0 || errno == ETERM);
     CHECK_EQ(zmq_close(it.second), 0);
   }
-  LOG(INFO) << "Ghost";
   zmq_ctx_destroy(context_);
 }
 

@@ -74,19 +74,19 @@ TEST_F(TestEngine, SimpleTaskMapStorage) {
   Engine engine(node, {node});
   // start
   engine.StartEverything();
-  LOG(INFO) << "Start everything complete";
+  // LOG(INFO) << "Start everything complete";
   auto table_id = engine.CreateTable<double>(ModelType::SSP, StorageType::Map);  // table 0
-  LOG(INFO) << "Create table complete";
+  // LOG(INFO) << "Create table complete";
   engine.Barrier();
-  LOG(INFO) << "Barrier complete";
+  // LOG(INFO) << "Barrier complete";
   MLTask task;
-  LOG(INFO) << "Task start";
+  // LOG(INFO) << "Task start";
   task.SetWorkerAlloc({{0, 3}});  // 3 workers on node 0
   task.SetTables({table_id});     // Use table 0
   task.SetLambda([](const Info& info) { LOG(INFO) << "Hi"; });
   engine.Run(task);
   // stop
-   LOG(INFO) << "Stop Every thing";
+  //  LOG(INFO) << "Stop Every thing";
   engine.StopEverything();
 }
 

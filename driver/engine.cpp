@@ -85,17 +85,17 @@ void Engine::StopEverything() {
    * 3. The mailbox will stop the corresponding registered threads
    * 4. Stop the ServerThreads and WorkerThreads
    */
-  LOG(INFO) << "1";
+  // LOG(INFO) << "1";
   this->StopSender();
-  LOG(INFO) << "2";
+  // LOG(INFO) << "2";
   Barrier();
-  LOG(INFO) << "2.5";
+  // LOG(INFO) << "2.5";
   this->StopMailbox();
-  LOG(INFO) << "3";
+  // LOG(INFO) << "3";
   this->StopServerThreads();
-  LOG(INFO) << "4";
+  // LOG(INFO) << "4";
   this->StopWorkerThreads();
-  LOG(INFO) << "5";
+  // LOG(INFO) << "5";
 }
 void Engine::StopServerThreads() {
   int i = 0;
@@ -141,16 +141,16 @@ WorkerSpec Engine::AllocateWorkers(const std::vector<WorkerAlloc>& worker_alloc)
 void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_ids) {
   CHECK(id_mapper_);
   std::vector<uint32_t> local_server = id_mapper_->GetServerThreadsForId(node_.id);
-  LOG(INFO) << "Get server thread for id complete";
+  // LOG(INFO) << "Get server thread for id complete";
   int count = local_server.size();
   if (count == 0)
     return;
 
   auto id = id_mapper_->AllocateWorkerThread(node_.id);
-  LOG(INFO) << "Get id complete";
+  // LOG(INFO) << "Get id complete";
   ThreadsafeQueue<Message> queue;
   mailbox_->RegisterQueue(id, &queue);
-  LOG(INFO) << "Register complete";
+  // LOG(INFO) << "Register complete";
   Message reset_msg;
   reset_msg.meta.flag = Flag::kResetWorkerInModel;
   reset_msg.meta.model_id = table_id;
@@ -160,7 +160,7 @@ void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_id
     reset_msg.meta.recver = server;
     sender_->GetMessageQueue()->Push(reset_msg);
   }
-  LOG(INFO) << "Ready to send message";
+  // LOG(INFO) << "Ready to send message";
   Message reply;
   while (count > 0) {
     queue.WaitAndPop(&reply);
@@ -168,7 +168,7 @@ void Engine::InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_id
     CHECK(reply.meta.model_id == table_id);
     --count;
   }
-  LOG(INFO) << "Reply message complete";
+  // LOG(INFO) << "Reply message complete";
   mailbox_->DeRegisterQueue(id);
   id_mapper_->DeallocateWorkerThread(node_.id, id);
 }
@@ -177,28 +177,28 @@ void Engine::Run(const MLTask& task) {
   CHECK(task.IsSetup());
 
   auto worker_spec = AllocateWorkers(task.GetWorkerAlloc());
-  LOG(INFO) << "Get worker allocation complete";
+  // LOG(INFO) << "Get worker allocation complete";
   // Init table
   const auto& tables = task.GetTables();
-  LOG(INFO) << "Get table complete";
+  // LOG(INFO) << "Get table complete";
   for (auto& table : tables) {
     InitTable(table, worker_spec.GetAllThreadIds());
   }
-  LOG(INFO) << "Init table complete";
+  // LOG(INFO) << "Init table complete";
   Barrier();
-  LOG(INFO) << "Barrier complete";
+  // LOG(INFO) << "Barrier complete";
   if (worker_spec.HasLocalWorkers(node_.id)) {
     const auto& local_threads = worker_spec.GetLocalThreads(node_.id);
-    LOG(INFO) << "Get local complete";
+    // LOG(INFO) << "Get local complete";
     const auto& local_workers = worker_spec.GetLocalWorkers(node_.id);
-    LOG(INFO) << "Get worker complete";
+    // LOG(INFO) << "Get worker complete";
     std::vector<std::thread> thread_group(local_threads.size());
     std::map<uint32_t, AbstractPartitionManager*> partition_manager_map;
     for (auto& table : tables) {
       auto it = partition_manager_map_.find(table);
       partition_manager_map[table] = it->second.get();
     }
-    LOG(INFO) << "Partition complete";
+    // LOG(INFO) << "Partition complete";
     for (int i = 0; i < thread_group.size(); i++) {
       // mailbox_->RegisterQueue(local_threads[i], worker_thread_->GetWorkQueue());
       Info info;
@@ -210,11 +210,11 @@ void Engine::Run(const MLTask& task) {
       thread_group[i] = std::thread([&task, info]() { task.RunLambda(info); });
       // thread_group[i].join();
     }
-    LOG(INFO) << "Wait for join";
+    // LOG(INFO) << "Wait for join";
     for (auto& th : thread_group) {
       th.join();
     }
-    LOG(INFO) << "End join";
+    // LOG(INFO) << "End join";
   }
 }
 
