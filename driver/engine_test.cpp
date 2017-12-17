@@ -84,10 +84,9 @@ TEST_F(TestEngine, SimpleTaskMapStorage) {
   task.SetWorkerAlloc({{0, 3}});  // 3 workers on node 0
   task.SetTables({table_id});     // Use table 0
   task.SetLambda([](const Info& info) { LOG(INFO) << "Hi"; });
-  LOG(INFO) << "End";
   engine.Run(task);
-
   // stop
+   LOG(INFO) << "Stop Every thing";
   engine.StopEverything();
 }
 

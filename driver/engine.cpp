@@ -85,10 +85,15 @@ void Engine::StopEverything() {
    * 3. The mailbox will stop the corresponding registered threads
    * 4. Stop the ServerThreads and WorkerThreads
    */
+  LOG(INFO) << "1";
   this->StopSender();
+  LOG(INFO) << "2";
   this->StopMailbox();
+  LOG(INFO) << "3";
   this->StopServerThreads();
+  LOG(INFO) << "4";
   this->StopWorkerThreads();
+  LOG(INFO) << "5";
 }
 void Engine::StopServerThreads() {
   int i = 0;
