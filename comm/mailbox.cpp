@@ -60,6 +60,7 @@ void Mailbox::Stop() {
 }
 
 void Mailbox::StopReceiving() {
+  LOG(INFO)<<"StopReceiving";
   Barrier();
   Message exit_msg;
   exit_msg.meta.recver = node_.id;
@@ -70,6 +71,7 @@ void Mailbox::StopReceiving() {
 
 void Mailbox::CloseSockets() {
   // Kill all the registered threads
+  LOG(INFO)<<"Close sockets";
   Message exit_msg;
   exit_msg.meta.recver = node_.id;
   exit_msg.meta.flag = Flag::kExit;
