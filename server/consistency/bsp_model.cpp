@@ -7,7 +7,7 @@ BSPModel::BSPModel(uint32_t model_id, std::unique_ptr<AbstractStorage>&& storage
                    ThreadsafeQueue<Message>* reply_queue) {
   // TODO
   model_id_=model_id;
-  reply_queue = reply_queue;
+  reply_queue_ = reply_queue;
   storage_=std::move(storage_ptr);
 }
 

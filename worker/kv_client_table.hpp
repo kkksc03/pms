@@ -60,10 +60,10 @@ class KVClientTable {
       Message m;
       third_party::SArray<char> key_char;
       key_char=sliced[count].second.first;
-      third_party::SArray<float> val_chart;
+      third_party::SArray<Val> val_chart;
       int j=0;
       while(j<sliced[count].second.second.size()){
-        val_chart.push_back((float)sliced[count].second.second.data()[j]);
+        val_chart.push_back((Val)sliced[count].second.second.data()[j]);
         j++;
       }
       third_party::SArray<char> val_char;
@@ -100,8 +100,8 @@ class KVClientTable {
       sender_queue_->Push(m);
       count++;
     }
-    third_party::SArray<float> vtp;
-    std::vector<float> tmp;
+    third_party::SArray<Val> vtp;
+    std::vector<Val> tmp;
     std::function<void(Message&)> recv_handle =[&](Message m){
       vtp=m.data[1];
       for(int i=0;i<vtp.size();i++){
