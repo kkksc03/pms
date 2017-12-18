@@ -198,9 +198,10 @@ void Engine::Run(const MLTask& task) {
       auto it = partition_manager_map_.find(table);
       partition_manager_map[table] = it->second.get();
     }
+    this->callback_runner_.reset(new callbackRunner())
     // LOG(INFO) << "Partition complete";
     for (int i = 0; i < thread_group.size(); i++) {
-      // mailbox_->RegisterQueue(local_threads[i], worker_thread_->GetWorkQueue());
+      mailbox_->RegisterQueue(local_threads[i], worker_thread_->GetWorkQueue());
       Info info;
       info.thread_id = local_threads[i];
       info.worker_id = local_workers[i];
