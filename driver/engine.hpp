@@ -138,7 +138,7 @@ class Engine {
   void InitTable(uint32_t table_id, const std::vector<uint32_t>& worker_ids);
 
   /**
-   * Run the task
+   * Run the task<
    *
    * After starting the system, the engine run a task by starting the prescribed threads to run UDF
    *

@@ -1,5 +1,6 @@
 #include "glog/logging.h"
 #include "gtest/gtest.h"
+#include <gflags/gflags.h>
 
 #include "driver/engine.hpp"
 #include "worker/kv_client_table.hpp"
