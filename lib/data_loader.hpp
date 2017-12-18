@@ -23,9 +23,9 @@ class DataLoader : public AbstractDataLoader<Sample, DataStore> {
     // 1. Connect to the data source, e.g. HDFS, via the modules in io
     // 2. Extract and parse lines
     // 3. Put samples into datastore
-    std::string hdfs_namenode = "proj10";
-    int hdfs_namenode_port = 9000;
-    int master_port = 23489;  // use a random port number to avoid collision with other users
+    std::string hdfs_namenode = FLAGS_hdfs_namenode;
+    int hdfs_namenode_port = FLAGS_hdfs_namenode_port;
+    int master_port = FLAGS_hdfs_master_port;  // use a random port number to avoid collision with other users
     zmq::context_t zmq_context(1);
 
     // 1. Spawn the HDFS block assigner thread on the master
@@ -45,7 +45,7 @@ class DataLoader : public AbstractDataLoader<Sample, DataStore> {
     LOG(INFO) << "Coordinator begins serving";
 
     std::thread worker_thread([hdfs_namenode_port, hdfs_namenode, &coordinator, worker_host, parse, &datastore] {
-      std::string input = "hdfs:///datasets/classification/a9";
+      std::string input = url;
       int num_threads = 1;
       int second_id = 0;
       LineInputFormat infmt(input, num_threads, second_id, &coordinator, worker_host, hdfs_namenode,

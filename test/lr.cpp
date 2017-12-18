@@ -6,13 +6,47 @@
 #include "worker/kv_client_table.hpp"
 #include "lib/data_loader.hpp"
 
+/*
+third_party::SArray<double> compute_gradients(
+    const std::vector<Sample*>& samples, 
+    const third_party::SArray<Key>& keys,
+    const third_party::SArray<double>& vals,
+    double alpla
+) {
+    third_party::SArray<double> deltas(keys.size(),0.);
+    for (auto sample : samples) {
+        auto& x= sample-> x_;
+        double& y = sample-> y_;
+        double predict = 0.;
+        if (y < 0)
+            y = 0;
+        int idx = 0;
+        for (auto& field : x) {
+            while (keys[idx] < field.first)
+                ++idx;
+            predict += vals[idx] * field.second();
+        }
+        predict += vals.back();
+        predict = 1. / (1. + exp(-1 * predict));//or ~1, can not see clearly
+        idx = 0;
+        for (auto & field : x){
+            while (keys[idx] < field.first)
+                ++idx;
+            deltas[idx] += alpha * field.second * (y - predict);
+        }
+        deltas[deltas.size() - 1] += alpha * (y - predict);
+    }
+    return deltas;
+}
+*/
+
 //. Define arguments
 DEFINE_int32(my_id, -1, "the process id of this program");
 DEFINE_string(config_file, "", "The config file path");
 // Data loading config
 DEFINE_string(hdfs_namenode, "proj10", "The hdfs namenode hostname");
 DEFINE_int32(hdfs_namenode_port, 9000, "The hdfs port");
-DEFINE_int32(hdfs_master_port, -1, "A port number for the hdfs assigner host");
+DEFINE_int32(hdfs_master_port, 23489, "A port number for the hdfs assigner host");
 DEFINE_int32(n_loaders_per_node, 1, "The number of loaders per node");
 DEFINE_string(input, "", "The hdfs input url");
 DEFINE_int32(n_features, -1, "The number of feature in the dataset");
@@ -44,7 +78,9 @@ int main(int argc, char** argv){
     const Node& node = nodes[my_id];
 
     //Load Data
-    auto loader=HDFSDataLoader<Sample, DataStore<Sample>>::Get(node, FLAGS_hdfs_namenode, FLAGS_hdfs_namenode_port, nodes[0].hostname, FLAGS_hdfs_master_port, n_nodes );
+    auto loader=HDFSDataLoader<Sample, DataStore<Sample>>::Get(
+        node, FLAGS_hdfs_namenode, FLAGS_hdfs_namenode_port, nodes[0].hostname, FLAGS_hdfs_master_port, n_nodes 
+    );
     DataStore<Sample> datastore(FLAGS_n_loaders_per_node);
     loader->Load(FLAGS_input, FLAGS_n_features, Parser::parse_libsvm, &datastore, n_nodes);
 
