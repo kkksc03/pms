@@ -4,6 +4,7 @@ file(GLOB base-src-files
   serialization.cpp
   abstract_partition_manager.cpp
   range_partition_manager.cpp
+  hash_partition_manager.cpp
   )
 
 add_library(base-objs OBJECT ${base-src-files})
