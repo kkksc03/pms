@@ -68,6 +68,7 @@ void Engine::StartServerThreads() {
   // }
 }
 void Engine::StartWorkerThreads() {
+  this->callback_runner_.reset(new callbackRunner());
   uint32_t worker_thread_id = id_mapper_->AllocateWorkerThread(node_.id);
   worker_thread_.reset(new AbstractWorkerThread(worker_thread_id, this->callback_runner_.get()));
   worker_thread_->Start();
@@ -198,7 +199,7 @@ void Engine::Run(const MLTask& task) {
       auto it = partition_manager_map_.find(table);
       partition_manager_map[table] = it->second.get();
     }
-    this->callback_runner_.reset(new callbackRunner());
+
     // LOG(INFO) << "Partition complete";
     for (int i = 0; i < thread_group.size(); i++) {
       mailbox_->RegisterQueue(local_threads[i], worker_thread_->GetWorkQueue());
