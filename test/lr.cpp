@@ -4,6 +4,7 @@
 
 #include "driver/engine.hpp"
 #include "worker/kv_client_table.hpp"
+#include "lib/data_loader.hpp"
 
 //. Define arguments
 DEFINE_int32(my_id, -1, "the process id of this program");
@@ -21,6 +22,8 @@ DEFINE_int32(n_iters, 10, "The number of interattions");
 DEFINE_int32(batch_size, 100, "Batch size");
 DEFINE_double(alpha, 0.001, "learning rate");
 
+namespace csci5570 {
+
 int main(int argc, char** argv){
     google::ParseCommandLineFlags(&argc, &argv, true);
     //gflags::ParseCommandLineFlags(&argc, &argv, true);
@@ -28,14 +31,14 @@ int main(int argc, char** argv){
 
     int my_id=FLAGS_my_id;
     int n_nodes=5;
-    std:vector<Node> nodes(n_nodes);
+    std::vector<Node> nodes(n_nodes);
     //Should read from config file 
     for(int i = 0; i < n_nodes; ++i){
         nodes[i].id = i;
         nodes[i].hostname = "proj" + std::to_string(i+5);
         nodes[i].port = 45612;
         //"0:proj5:45612"
-    //"1:proj6:45612"
+        //"1:proj6:45612"
     }
 
     const Node& node = nodes[my_id];
@@ -50,7 +53,7 @@ int main(int argc, char** argv){
     engine.StartEverything();
 
     //Create table on the server side
-    const auto kTable = engine.CreateTable<double>(ModelType::BSP,StoreageType::Map,FLAGS_n_features+1,RangePartition);
+    const auto kTable = engine.CreateTable<double>(ModelType::ASP,StoreageType::Map,FLAGS_n_features+1,RangePartition);
     //Specify task
     MLTask task;
     task.SetTables({kTable});
@@ -83,3 +86,4 @@ int main(int argc, char** argv){
     engine.StopEverything();
     return 1;
 }
+}  // namespace csci5570
