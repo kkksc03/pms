@@ -21,6 +21,7 @@ make -j4      # build all the targets
 ./HuskyUnitTest  # run all unit tests
 ./HuskyUnitTest --gtest_filter=TestServerThread.RegisterModel  # run a specific test
 ```
+
 ![Mind map](mindmap.svg)
 
 ## Tutorial 2

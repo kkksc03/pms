@@ -13,7 +13,7 @@ DEFINE_int32(hdfs_namenode_port, 9000, "The hdfs port");
 DEFINE_int32(hdfs_master_port, -1, "A port number for the hdfs assigner host");
 DEFINE_int32(n_loaders_per_node, 1, "The number of loaders per node");
 DEFINE_string(input, "", "The hdfs input url");
-DEFINE_int32(n_feature, -1, "The number of feature in the dataset");
+DEFINE_int32(n_features, -1, "The number of feature in the dataset");
 // Traing config
 DEFINE_int32(n_workers_per_node, 1, "The number of workers per node");
 DEFINE_int32(n_iters, 10, "The number of interattions");
@@ -24,7 +24,7 @@ int main(int argc, char** argv){
     gflags::ParseCommandLineFlags(&argc, &argv, true);
     Google::InitGoogleLogging(argc[0]);
 
-    int may_id=FLAG_my_id;
+    int my_id=FLAG_my_id;
     int n_nodes=5;
     std:vector<Node> nodes(n_nodes);
     //Should read from config file 
