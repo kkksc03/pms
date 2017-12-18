@@ -22,10 +22,11 @@ DEFINE_int32(batch_size, 100, "Batch size");
 DEFINE_double(alpha, 0.001, "learning rate");
 
 int main(int argc, char** argv){
-    gflags::ParseCommandLineFlags(&argc, &argv, true);
-    Google::InitGoogleLogging(argc[0]);
+    google::ParseCommandLineFlags(&argc, &argv, true);
+    //gflags::ParseCommandLineFlags(&argc, &argv, true);
+    google::InitGoogleLogging(argv[0]);
 
-    int my_id=FLAG_my_id;
+    int my_id=FLAGS_my_id;
     int n_nodes=5;
     std:vector<Node> nodes(n_nodes);
     //Should read from config file 
@@ -40,7 +41,7 @@ int main(int argc, char** argv){
     const Node& node = nodes[my_id];
 
     //Load Data
-    auto loader=HDFSDataLoader<Sample, DataStore<Sample>>::Get(node, FLAG_hdfs_namenode, FLAGS_hdfs_namenode_port, nodes[0].hostname, FLAGS_hdfs_master_port, n_nodes );
+    auto loader=HDFSDataLoader<Sample, DataStore<Sample>>::Get(node, FLAGS_hdfs_namenode, FLAGS_hdfs_namenode_port, nodes[0].hostname, FLAGS_hdfs_master_port, n_nodes );
     DataStore<Sample> datastore(FLAGS_n_loaders_per_node);
     loader->Load(FLAGS_input, FLAGS_n_features, Parser::parse_libsvm, &datastore, n_nodes);
 
@@ -55,7 +56,7 @@ int main(int argc, char** argv){
     task.SetTables({kTable});
     std::vector<WorkerAlloc> worker_alloc;
     for(int i = 0; i < n_nodes; ++i){
-        woker_alloc.push_back({nodes[i].id, static_cast<uint32_t>(FLAG_n_workers_per_node)});
+        woker_alloc.push_back({nodes[i].id, static_cast<uint32_t>(FLAGS_n_workers_per_node)});
     }
     task.SetWorkerAlloc(worker_alloc);
     //get client table
