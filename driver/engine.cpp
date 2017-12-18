@@ -69,7 +69,7 @@ void Engine::StartServerThreads() {
 }
 void Engine::StartWorkerThreads() {
   this->callback_runner_.reset(new callbackRunner());
-  uint32_t worker_thread_id = id_mapper_->AllocateWorkerThread(node_.id);
+  uint32_t worker_thread_id = id_mapper_->GetWorkerHelperThreadsForId(node_.id)[0];
   worker_thread_.reset(new AbstractWorkerThread(worker_thread_id, this->callback_runner_.get()));
   worker_thread_->Start();
 }

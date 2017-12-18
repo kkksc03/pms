@@ -14,47 +14,47 @@ class callbackRunner: public AbstractCallbackRunner {
 
   void RegisterRecvHandle(uint32_t app_thread_id, uint32_t model_id,
                                   const std::function<void(Message&)>& recv_handle) override{
-    recv_handle_ = recv_handle; 
+       recv_handle_map_[app_thread_id][model_id]=recv_handle;
  }
   
   void RegisterRecvFinishHandle(uint32_t app_thread_id, uint32_t model_id,
                                 const std::function<void()>& recv_finish_handle) override {
-    recv_finish_handle_ = recv_finish_handle;
+    recv_finish_handle_map_[app_thread_id][model_id] = recv_finish_handle;
   }
 
   void NewRequest(uint32_t app_thread_id, uint32_t model_id, uint32_t expected_responses) override {
-    tracker_ = {expected_responses, 0};
+    tracker_map_[app_thread_id][model_id] = {expected_responses, 0};
   }
   void WaitRequest(uint32_t app_thread_id, uint32_t model_id) override {
-    std::unique_lock<std::mutex> lk(mu_);
-    cond_.wait(lk, [this] { return tracker_.first == tracker_.second; });
+    std::unique_lock<std::mutex> lk(mutex_map_[app_thread_id][model_id]);
+    cond_map_[app_thread_id][model_id].wait(lk, [this,app_thread_id,model_id] { return tracker_map_[app_thread_id][model_id].first == tracker_map_[app_thread_id][model_id].second; });
   }
   void AddResponse(uint32_t app_thread_id, uint32_t model_id, Message& m) override {
     bool recv_finish = false;
     {
-      std::lock_guard<std::mutex> lk(mu_);
-      recv_finish = tracker_.first == tracker_.second + 1 ? true : false;
+      std::lock_guard<std::mutex> lk(mutex_map_[app_thread_id][model_id]);
+      recv_finish = tracker_map_[app_thread_id][model_id].first == tracker_map_[app_thread_id][model_id].second + 1 ? true : false;
     }
-    recv_handle_(m);
+    recv_handle_map_[app_thread_id][model_id](m);
     if (recv_finish) {
-      recv_finish_handle_();
+     recv_finish_handle_map_[app_thread_id][model_id]();
     }
     {
-      std::lock_guard<std::mutex> lk(mu_);
-      tracker_.second += 1;
+      std::lock_guard<std::mutex> lk(mutex_map_[app_thread_id][model_id]);
+      tracker_map_[app_thread_id][model_id].second += 1;
       if (recv_finish) {
-        cond_.notify_all();
+        cond_map_[app_thread_id][model_id].notify_all();
       }
     }
   }
 
  private:
-  std::function<void(Message&)> recv_handle_;
-  std::function<void()> recv_finish_handle_;
+  std::map<uint32_t,std::map<uint32_t,std::function<void(Message&)>>> recv_handle_map_;
+  std::map<uint32_t,std::map<uint32_t,std::function<void()>>> recv_finish_handle_map_;
 
-  std::mutex mu_;
-  std::condition_variable cond_;
-  std::pair<uint32_t, uint32_t> tracker_;
+  std::map<uint32_t,std::map<uint32_t,std::mutex>> mutex_map_ ;
+  std::map<uint32_t,std::map<uint32_t,std::condition_variable>> cond_map_;
+  std::map<uint32_t,std::map<uint32_t,std::pair<uint32_t, uint32_t>>> tracker_map_;
 };  // class CallbackRunner
 
 }  // namespace csci5570
