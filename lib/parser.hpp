@@ -24,7 +24,7 @@ class Parser {
     // so far we tried all the tree and found std::strtok_r is fastest :)
     Sample temp_sample = SVMSample();
  
-    boost::char_separator<char> sep(" ");  
+    boost::char_separator<char> sep(" :");  
     boost::tokenizer<boost::char_separator<char>>  tok(line,sep);  
 
     //boost::tokenizer<> tok(line);
@@ -45,10 +45,11 @@ class Parser {
         index = stoi(*beg);
         // LOG(INFO) << *beg;
         // LOG(INFO)<<index;
+        temp_sample.x_.push_back(index);
       }
       else {
         value = stof(*beg);
-        temp_sample.x_.push_back(make_pair(index,value));
+        //temp_sample.x_.push_back(std::make_pair(index,value));
       }
       count++;
     }
