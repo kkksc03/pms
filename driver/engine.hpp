@@ -16,6 +16,7 @@
 #include "server/abstract_storage.hpp"
 #include "server/consistency/asp_model.hpp"
 #include "server/consistency/ssp_model.hpp"
+#include "server/consistency/bsp_model.hpp"
 #include "base/range_partition_manager.hpp"
 #include "base/hash_partition_manager.hpp"
 
@@ -94,9 +95,7 @@ class Engine {
   template <typename Val>
   uint32_t CreateTable(std::unique_ptr<AbstractPartitionManager> partition_manager, ModelType model_type,
                        StorageType storage_type, int model_staleness = 0) {
-    std::unique_ptr<AbstractPartitionManager> pm;
-    pm.reset(partition_manager);
-    partition_manager_map_.insert(make_pair(model_count_,std::move(pm)));
+    partition_manager_map_.insert(make_pair(model_count_,std::move(partition_manager)));
     std::unique_ptr<AbstractStorage> storage;
     std::unique_ptr<AbstractModel> model;
     switch(storage_type){
@@ -113,7 +112,7 @@ class Engine {
                                  model.reset(new SSPModel(model_count_,std::move(storage),model_staleness,sender_->GetMessageQueue()));
                                  server_thread_group_[i]->RegisterModel(model_count_,std::move(model));
                             };  break;
-      case ModelType::SSP: for (int i=0;i<server_thread_group_.size();i++){
+      case ModelType::BSP: for (int i=0;i<server_thread_group_.size();i++){
                                  model.reset(new BSPModel(model_count_,std::move(storage),sender_->GetMessageQueue()));
                                  server_thread_group_[i]->RegisterModel(model_count_,std::move(model));
                             };  break;
@@ -157,7 +156,7 @@ class Engine {
                                  model.reset(new SSPModel(model_count_,std::move(storage),model_staleness,sender_->GetMessageQueue()));
                                  server_thread_group_[i]->RegisterModel(model_count_,std::move(model));
                             };  break;
-      case ModelType::SSP: for (int i=0;i<server_thread_group_.size();i++){
+      case ModelType::BSP: for (int i=0;i<server_thread_group_.size();i++){
                                  model.reset(new BSPModel(model_count_,std::move(storage),sender_->GetMessageQueue()));
                                  server_thread_group_[i]->RegisterModel(model_count_,std::move(model));
                             };  break;
