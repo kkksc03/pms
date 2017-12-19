@@ -127,8 +127,8 @@ TEST_F(TestEngine, KVClientTableMapStorage) {
   const auto kTableId = engine.CreateTable<double>(ModelType::SSP, StorageType::Map);  // table 0
   engine.Barrier();
   MLTask task;
-  // task.SetWorkerAlloc({{0, 3}});  // 3 workers on node 0
-  task.SetWorkerAlloc({{0, 1}});  // 1 workers on node 0
+  task.SetWorkerAlloc({{0, 3}});  // 3 workers on node 0
+ // task.SetWorkerAlloc({{0, 1}});  // 1 workers on node 0
   task.SetTables({kTableId});     // Use table 0
   task.SetLambda([kTableId](const Info& info) {
     LOG(INFO) << "Hi";
