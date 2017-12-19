@@ -88,6 +88,20 @@ class KVClientTable {
     std::vector<std::pair<int,third_party::SArray<Key>>> sliced;
     partition_manager_->Slice(ktmp,&sliced);
     uint32_t count=0;
+    third_party::SArray<Val> vtp;
+    std::vector<Val> tmp;
+    std::function<void(Message&)> recv_handle =[&](Message m){
+    vtp=m.data[1];
+    for(int i=0;i<vtp.size();i++){
+        tmp.push_back(vtp[i]);
+      }
+    };
+    std::function<void()> recv_finish_handle =[&](){
+        vals->assign(tmp.begin(),tmp.end());
+    };
+    callback_runner_->RegisterRecvFinishHandle(app_thread_id_,model_id_,recv_finish_handle);
+    callback_runner_->RegisterRecvHandle(app_thread_id_,model_id_,recv_handle);
+    callback_runner_->NewRequest(app_thread_id_,model_id_,sliced.size());
     while(count<sliced.size()){
       Message m;
       third_party::SArray<char> key_char;
@@ -100,20 +114,6 @@ class KVClientTable {
       sender_queue_->Push(m);
       count++;
     }
-    third_party::SArray<Val> vtp;
-    std::vector<Val> tmp;
-    std::function<void(Message&)> recv_handle =[&](Message m){
-      vtp=m.data[1];
-      for(int i=0;i<vtp.size();i++){
-        tmp.push_back(vtp[i]);
-      }
-    };
-    std::function<void()> recv_finish_handle =[&](){
-        vals->assign(tmp.begin(),tmp.end());
-    };
-    callback_runner_->RegisterRecvFinishHandle(app_thread_id_,model_id_,recv_finish_handle);
-    callback_runner_->RegisterRecvHandle(app_thread_id_,model_id_,recv_handle);
-    callback_runner_->NewRequest(app_thread_id_,model_id_,sliced.size());
     callback_runner_->WaitRequest(app_thread_id_,model_id_);
   }
   // sarray version
