@@ -135,9 +135,10 @@ void LrTest(){
         
         //clock
     });
+*/
     engine.StopEverything();
     return 1;
-*/
+
 
 }
 }  // namespace csci5570
