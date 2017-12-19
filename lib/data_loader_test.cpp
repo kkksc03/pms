@@ -16,6 +16,7 @@ class TestDataLoader : public testing::Test {
 };
 
 TEST_F(TestDataLoader, LoadData) {
+  /*
   using DataStore = std::vector<lib::SVMSample>;
   using Parser = lib::Parser<lib::SVMSample, DataStore>;
   // using Parse = int;
@@ -35,6 +36,7 @@ TEST_F(TestDataLoader, LoadData) {
     LOG(INFO) <<"Index :"<<i<<" "<<data_store[i].toString();
   }
   LOG(INFO)<<"Size "<<data_store.size();
+  */
 }
 
 }  // namespace csci5570

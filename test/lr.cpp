@@ -27,7 +27,7 @@ third_party::SArray<double> compute_gradients(
             predict += vals[idx] * field.second();
         }
         predict += vals.back();
-        predict = 1. / (1. + exp(-1 * predict));//or ~1, can not see clearly
+        predict = 1. / (1. + exp(-1 * predict));
         idx = 0;
         for (auto & field : x){
             while (keys[idx] < field.first)
@@ -90,7 +90,12 @@ int main(int argc, char** argv){
     auto svm_parse = Parser::parse_libsvm;
     std::string url = "hdfs:///datasets/classification/a9";
     lib::DataLoader<lib::SVMSample, DataStore> data_loader;
-    data_loader.load<Parse>(url, FLAGS_n_features, svm_parse, &data_store);
+    data_loader.load<Parse>(
+        FLAGS_hdfs_namenode,
+        FLAGS_hdfs_namenode_port,
+        FLAGS_master_port,
+        url, FLAGS_n_features, svm_parse, &data_store
+    );
     for (int i = 0; i < data_store.size(); i++) {
         LOG(INFO) <<"Index :"<<i<<" "<<data_store[i].toString();
     }

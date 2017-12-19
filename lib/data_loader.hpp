@@ -19,13 +19,19 @@ template <typename Sample, typename DataStore>
 class DataLoader : public AbstractDataLoader<Sample, DataStore> {
  public:
   template <typename Parse>  // e.g. std::function<Sample(boost::string_ref, int)>
-  static void load(std::string url, int n_features, Parse parse, DataStore* datastore) {
+  static void load(
+      std::string hdfs_namenode,
+      int hdfs_namenode_port,
+      int master_port,
+      std::string url, int n_features, Parse parse, DataStore* datastore
+    ) {
     // 1. Connect to the data source, e.g. HDFS, via the modules in io
     // 2. Extract and parse lines
     // 3. Put samples into datastore
-    std::string hdfs_namenode = FLAGS_hdfs_namenode;
-    int hdfs_namenode_port = FLAGS_hdfs_namenode_port;
-    int master_port = FLAGS_hdfs_master_port;  // use a random port number to avoid collision with other users
+
+    //std::string hdfs_namenode = FLAGS_hdfs_namenode;
+    //int hdfs_namenode_port = FLAGS_hdfs_namenode_port;
+    //int master_port = FLAGS_hdfs_master_port;  // use a random port number to avoid collision with other users
     zmq::context_t zmq_context(1);
 
     // 1. Spawn the HDFS block assigner thread on the master
@@ -44,7 +50,7 @@ class DataLoader : public AbstractDataLoader<Sample, DataStore> {
     coordinator.serve();
     LOG(INFO) << "Coordinator begins serving";
 
-    std::thread worker_thread([hdfs_namenode_port, hdfs_namenode, &coordinator, worker_host, parse, &datastore] {
+    std::thread worker_thread([url, hdfs_namenode_port, hdfs_namenode, &coordinator, worker_host, parse, &datastore] {
       std::string input = url;
       int num_threads = 1;
       int second_id = 0;
