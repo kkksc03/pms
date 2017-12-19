@@ -8,7 +8,7 @@
 
 /*
 third_party::SArray<double> compute_gradients(
-    const std::vector<Sample*>& samples, 
+    const std::vector<lib::SVMSample*>& samples, 
     const third_party::SArray<Key>& keys,
     const third_party::SArray<double>& vals,
     double alpla
@@ -49,7 +49,7 @@ DEFINE_int32(hdfs_namenode_port, 9000, "The hdfs port");
 DEFINE_int32(hdfs_master_port, 23489, "A port number for the hdfs assigner host");
 DEFINE_int32(n_loaders_per_node, 1, "The number of loaders per node");
 DEFINE_string(input, "", "The hdfs input url");
-DEFINE_int32(n_features, -1, "The number of feature in the dataset");
+DEFINE_int32(n_features, 10, "The number of feature in the dataset");
 // Traing config
 DEFINE_int32(n_workers_per_node, 1, "The number of workers per node");
 DEFINE_int32(n_iters, 10, "The number of interattions");
@@ -78,12 +78,25 @@ int main(int argc, char** argv){
     const Node& node = nodes[my_id];
 
     //Load Data
-    auto loader=HDFSDataLoader<Sample, DataStore<Sample>>::Get(
-        node, FLAGS_hdfs_namenode, FLAGS_hdfs_namenode_port, nodes[0].hostname, FLAGS_hdfs_master_port, n_nodes 
-    );
-    DataStore<Sample> datastore(FLAGS_n_loaders_per_node);
-    loader->Load(FLAGS_input, FLAGS_n_features, Parser::parse_libsvm, &datastore, n_nodes);
+    using DataStore = std::vector<lib::SVMSample>;
+    using Parser = lib::Parser<lib::SVMSample, DataStore>;
+    using Parse = std::function<lib::SVMSample(boost::string_ref, int)>;
 
+
+    // using Parse=std::function<Sample(boost::string_ref, int)>;
+    DataStore data_store;
+    lib::SVMSample svm_sample;
+    // Parser svm_parser();
+    auto svm_parse = Parser::parse_libsvm;
+    std::string url = "hdfs:///datasets/classification/a9";
+    lib::DataLoader<lib::SVMSample, DataStore> data_loader;
+    data_loader.load<Parse>(url, FLAGS_n_features, svm_parse, &data_store);
+    for (int i = 0; i < data_store.size(); i++) {
+        LOG(INFO) <<"Index :"<<i<<" "<<data_store[i].toString();
+    }
+    LOG(INFO)<<"Size "<<data_store.size();
+
+/*
     //Start Engine 
     Engine engine(node, nodes);
     engine.StartEverything();
@@ -103,7 +116,7 @@ int main(int argc, char** argv){
         auto table=info.CreateKVClientTable<double>(kTable);
 	}
 	     
-    BatchIterator<Sample> batch(datastore);
+    BatchIterator<lib::SVMSample> batch(datastore);
 
     //interations
     for (int iter = 0; iter < FLAGS_n_iters; ++iter){
@@ -121,5 +134,8 @@ int main(int argc, char** argv){
     });
     engine.StopEverything();
     return 1;
+*/
+    return 0;
+
 }
 }  // namespace csci5570
