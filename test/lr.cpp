@@ -62,6 +62,8 @@ int main(int argc, char** argv){
     google::ParseCommandLineFlags(&argc, &argv, true);
     //gflags::ParseCommandLineFlags(&argc, &argv, true);
     google::InitGoogleLogging(argv[0]);
+    FLAGS_stderrthreshold = 0;
+    FLAGS_colorlogtostderr = true;
 
     int my_id=FLAGS_my_id;
     int n_nodes=5;
@@ -93,7 +95,7 @@ int main(int argc, char** argv){
     data_loader.load<Parse>(
         FLAGS_hdfs_namenode,
         FLAGS_hdfs_namenode_port,
-        FLAGS_master_port,
+        FLAGS_hdfs_master_port,
         url, FLAGS_n_features, svm_parse, &data_store
     );
     for (int i = 0; i < data_store.size(); i++) {
