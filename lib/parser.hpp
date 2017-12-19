@@ -2,6 +2,7 @@
 
 #include <boost/tokenizer.hpp>
 #include <string>
+#include <utility>
 #include "boost/utility/string_ref.hpp"
 #include "lib/svm_sample.hpp"
 // For testing
@@ -22,9 +23,15 @@ class Parser {
     // hints: you may use boost::tokenizer, std::strtok_r, std::stringstream or any method you like
     // so far we tried all the tree and found std::strtok_r is fastest :)
     Sample temp_sample = SVMSample();
-    boost::tokenizer<> tok(line);
+ 
+    boost::char_separator<char> sep(" ");  
+    boost::tokenizer<boost::char_separator<char>>  tok(line,sep);  
+
+    //boost::tokenizer<> tok(line);
     int count = 0;
-    for (boost::tokenizer<>::iterator beg = tok.begin(); beg != tok.end(); ++beg) {
+    for (boost::tokenizer<boost::char_separator<char>>::iterator beg = tok.begin(); beg != tok.end(); ++beg) {
+      int index;
+      double value;
       if (count == 0) {
         if (line.substr(0, 1) == "+") {
           // LOG(INFO) << "Positive";
@@ -34,11 +41,14 @@ class Parser {
           temp_sample.y_ = -1;
         }
       }
-      if (count % 2 == 1) {
-        int index = stoi(*beg);
-        temp_sample.x_.push_back(index);
+      else if (count % 2 == 1) {
+        index = stoi(*beg);
         // LOG(INFO) << *beg;
         // LOG(INFO)<<index;
+      }
+      else {
+        value = stof(*beg);
+        temp_sample.x_.push_back(make_pair(index,value));
       }
       count++;
     }
