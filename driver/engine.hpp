@@ -17,6 +17,7 @@
 #include "server/consistency/asp_model.hpp"
 #include "server/consistency/ssp_model.hpp"
 #include "base/range_partition_manager.hpp"
+#include "base/hash_partition_manager.hpp"
 
 
 namespace csci5570 {
@@ -109,7 +110,11 @@ class Engine {
   template <typename Val>
   uint32_t CreateTable(ModelType model_type, StorageType storage_type, int model_staleness = 0) {
     std::unique_ptr<AbstractPartitionManager> pm;
-    pm.reset(new RangePartitionManager({0},{{0,99}}));
+    std::vector<uint32_t> vt;
+    for(auto node : noodes_){
+      vt.push_back(node.id);
+    }
+    pm.reset(new HashPartitionManager(vt));
     partition_manager_map_.insert(make_pair(model_count_,std::move(pm)));
     std::unique_ptr<AbstractStorage> storage;
     std::unique_ptr<AbstractModel> model;
