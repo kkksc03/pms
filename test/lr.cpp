@@ -59,7 +59,7 @@ DEFINE_double(alpha, 0.001, "learning rate");
 namespace csci5570 {
 
 int main(int argc, char** argv){
-    google::ParseCommandLineFlags(&argc, &argv, true);
+    //google::ParseCommandLineFlags(&argc, &argv, true);
     //gflags::ParseCommandLineFlags(&argc, &argv, true);
     google::InitGoogleLogging(argv[0]);
     FLAGS_stderrthreshold = 0;
@@ -142,7 +142,6 @@ int main(int argc, char** argv){
     engine.StopEverything();
     return 1;
 */
-    return 0;
 
 }
 }  // namespace csci5570
