@@ -1,3 +1,4 @@
+#include <vector>
 #include "glog/logging.h"
 #include "gtest/gtest.h"
 #include "gflags/gflags.h"
@@ -5,6 +6,7 @@
 #include "driver/engine.hpp"
 #include "worker/kv_client_table.hpp"
 #include "lib/data_loader.hpp"
+#include "lib/svm_sample.hpp"
 
 /*
 third_party::SArray<double> compute_gradients(
@@ -58,13 +60,7 @@ DEFINE_double(alpha, 0.001, "learning rate");
 
 namespace csci5570 {
 
-int main(int argc, char** argv){
-    //google::ParseCommandLineFlags(&argc, &argv, true);
-    //gflags::ParseCommandLineFlags(&argc, &argv, true);
-    google::InitGoogleLogging(argv[0]);
-    FLAGS_stderrthreshold = 0;
-    FLAGS_colorlogtostderr = true;
-
+void LrTest(){
     int my_id=FLAGS_my_id;
     int n_nodes=5;
     std::vector<Node> nodes(n_nodes);
@@ -145,3 +141,10 @@ int main(int argc, char** argv){
 
 }
 }  // namespace csci5570
+
+int main(int argc, char** argv){
+    google::InitGoogleLogging(argv[0]);
+    FLAGS_stderrthreshold = 0;
+    FLAGS_colorlogtostderr = true;
+    csci5570::LrTest();
+}
