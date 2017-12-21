@@ -125,8 +125,9 @@ double correct_rate(const std::vector<lib::KddSample>& samples, const std::vecto
       n++;
     }
   }
-  LOG(INFO) << result;
+
   double result = n / total;
+  LOG(INFO) << "Result:" << result;
   return result;
 }
 
