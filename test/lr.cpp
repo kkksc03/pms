@@ -1,16 +1,16 @@
 #include <vector>
+#include "gflags/gflags.h"
 #include "glog/logging.h"
 #include "gtest/gtest.h"
-#include "gflags/gflags.h"
 
 #include "driver/engine.hpp"
-#include "worker/kv_client_table.hpp"
 #include "lib/data_loader.hpp"
 #include "lib/svm_sample.hpp"
+#include "worker/kv_client_table.hpp"
 
 /*
 third_party::SArray<double> compute_gradients(
-    const std::vector<lib::SVMSample*>& samples, 
+    const std::vector<lib::SVMSample*>& samples,
     const third_party::SArray<Key>& keys,
     const third_party::SArray<double>& vals,
     double alpla
@@ -60,93 +60,86 @@ DEFINE_double(alpha, 0.001, "learning rate");
 
 namespace csci5570 {
 
-void LrTest(){
-    int my_id=FLAGS_my_id;
-    int n_nodes=5;
-    std::vector<Node> nodes(n_nodes);
-    //Should read from config file 
-    for(int i = 0; i < n_nodes; ++i){
-        nodes[i].id = i;
-        nodes[i].hostname = "proj" + std::to_string(i+5);
-        nodes[i].port = 45612;
-        //"0:proj5:45612"
-        //"1:proj6:45612"
-    }
+void LrTest() {
+  int my_id = FLAGS_my_id;
+  int n_nodes = 5;
+  std::vector<Node> nodes(n_nodes);
+  // Should read from config file
+  for (int i = 0; i < n_nodes; ++i) {
+    nodes[i].id = i;
+    nodes[i].hostname = "proj" + std::to_string(i + 5);
+    nodes[i].port = 45612;
+    //"0:proj5:45612"
+    //"1:proj6:45612"
+  }
 
-    const Node& node = nodes[my_id];
+  const Node& node = nodes[my_id];
 
-    //Load Data
-    using DataStore = std::vector<lib::SVMSample>;
-    using Parser = lib::Parser<lib::SVMSample, DataStore>;
-    using Parse = std::function<lib::SVMSample(boost::string_ref, int)>;
+  // Load Data
+  using DataStore = std::vector<lib::SVMSample>;
+  using Parser = lib::Parser<lib::SVMSample, DataStore>;
+  using Parse = std::function<lib::SVMSample(boost::string_ref, int)>;
 
+  // using Parse=std::function<Sample(boost::string_ref, int)>;
+  DataStore data_store;
+  lib::SVMSample svm_sample;
+  // Parser svm_parser();
+  auto svm_parse = Parser::parse_libsvm;
+  std::string url = "hdfs:///datasets/classification/a9";
+  lib::DataLoader<lib::SVMSample, DataStore> data_loader;
+  data_loader.load<Parse>(FLAGS_hdfs_namenode, FLAGS_hdfs_namenode_port, FLAGS_hdfs_master_port, url, FLAGS_n_features,
+                          svm_parse, &data_store);
+  for (int i = 0; i < data_store.size(); i++) {
+    LOG(INFO) << "Index :" << i << " " << data_store[i].toString();
+  }
+  LOG(INFO) << "Size " << data_store.size();
 
-    // using Parse=std::function<Sample(boost::string_ref, int)>;
-    DataStore data_store;
-    lib::SVMSample svm_sample;
-    // Parser svm_parser();
-    auto svm_parse = Parser::parse_libsvm;
-    std::string url = "hdfs:///datasets/classification/a9";
-    lib::DataLoader<lib::SVMSample, DataStore> data_loader;
-    data_loader.load<Parse>(
-        FLAGS_hdfs_namenode,
-        FLAGS_hdfs_namenode_port,
-        FLAGS_hdfs_master_port,
-        url, FLAGS_n_features, svm_parse, &data_store
-    );
-    for (int i = 0; i < data_store.size(); i++) {
-        LOG(INFO) <<"Index :"<<i<<" "<<data_store[i].toString();
-    }
-    LOG(INFO)<<"Size "<<data_store.size();
+  // Start Engine
+  Engine engine(node, nodes);
+  engine.StartEverything();
 
+  // Create table on the server side
+  // const auto kTable = engine.CreateTable<double>(ModelType::ASP,StoreageType::Map,FLAGS_n_features+1,RangePartition);
+  const auto kTable = engine.CreateTable<double>(ModelType::ASP, StoreageType::Map);
 
-    //Start Engine 
-    Engine engine(node, nodes);
-    engine.StartEverything();
+  // Specify task
+  MLTask task;
+  task.SetTables({kTable});
+  std::vector<WorkerAlloc> worker_alloc;
+  for (int i = 0; i < n_nodes; ++i) {
+    woker_alloc.push_back({nodes[i].id, static_cast<uint32_t>(FLAGS_n_workers_per_node)});
+  }
+  task.SetWorkerAlloc(worker_alloc);
+  // get client table
+  task.SetLambda([kTable, &datastore](const Info& info) {
+    auto table = info.CreateKVClientTable<double>(kTable);
 
-    //Create table on the server side
-    const auto kTable = engine.CreateTable<double>(ModelType::ASP,StoreageType::Map,FLAGS_n_features+1,RangePartition);
-/*
-    //Specify task
-    MLTask task;
-    task.SetTables({kTable});
-    std::vector<WorkerAlloc> worker_alloc;
-    for(int i = 0; i < n_nodes; ++i){
-        woker_alloc.push_back({nodes[i].id, static_cast<uint32_t>(FLAGS_n_workers_per_node)});
-    }
-    task.SetWorkerAlloc(worker_alloc);
-    //get client table
-    task.SetLambda([kTable,&datastore](const Info& info){
-        auto table=info.CreateKVClientTable<double>(kTable);
-	}
-	     
     BatchIterator<lib::SVMSample> batch(datastore);
 
-    //interations
-    for (int iter = 0; iter < FLAGS_n_iters; ++iter){
-        //get data batch
-        auto keys_data=batch.NextBatch(FLAGS_batch_size);
-    
-        // prepare parameters
-        third_party::SArray<double> vals;
-        table.Get(keys_data.first,&vals);
-        //compute gradients
-    
-        //update parameters 
-        
-        //clock
-    });
-*/
-    engine.StopEverything();
-    return 1;
+    // interations
+    for (int iter = 0; iter < FLAGS_n_iters; ++iter) {
+      // get data batch
+      auto keys_data = batch.NextBatch(FLAGS_batch_size);
 
+      // prepare parameters
+      third_party::SArray<double> vals;
+      table.Get(keys_data.first, &vals);
+      // compute gradients
 
+      // update parameters
+
+      // clock
+    }
+  });
+
+  engine.StopEverything();
+  return 1;
 }
 }  // namespace csci5570
 
-int main(int argc, char** argv){
-    google::InitGoogleLogging(argv[0]);
-    FLAGS_stderrthreshold = 0;
-    FLAGS_colorlogtostderr = true;
-    csci5570::LrTest();
+int main(int argc, char** argv) {
+  google::InitGoogleLogging(argv[0]);
+  FLAGS_stderrthreshold = 0;
+  FLAGS_colorlogtostderr = true;
+  csci5570::LrTest();
 }
