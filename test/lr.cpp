@@ -217,7 +217,7 @@ void LrTest() {
     // }
     BatchIterator<lib::KddSample> batch(data_store);
     for (int iter = 0; iter < 5; ++iter) {
-      auto keys_data = batch.NextBatch(5000);
+      auto keys_data = batch.NextBatch(2000);
       //   third_party::SArray<double> vals;
       //   table.Get(keys_data.first, &vals);
       std::vector<lib::KddSample> datasample = keys_data.second;
