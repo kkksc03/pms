@@ -12,8 +12,8 @@ class BatchIterator {
     std::vector<Sample> data;
     std::vector<uint32_t> keys;
     for (int i = 0; i < size; i++) {
-      // auto sample=datastore[rand()%datastore.size()];
-      auto sample = datastore[i];
+      auto sample = datastore[rand() % datastore.size()];
+      //   auto sample = datastore[i];
       data.push_back(sample);
       auto& x = sample.x_;
       for (auto& field : x) {
