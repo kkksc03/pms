@@ -133,6 +133,7 @@ class DataLoader : public AbstractDataLoader<Sample, DataStore> {
       boost::string_ref record;
       LOG(INFO) << "Begin loading data";
       while (true) {
+        LOG(INFO) << "Enter while loop";
         success = infmt.next(record);
         if (!success) {
           break;
