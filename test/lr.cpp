@@ -4,10 +4,10 @@
 #include "gtest/gtest.h"
 
 #include "driver/engine.hpp"
+#include "lib/batchiterator.hpp"
 #include "lib/data_loader.hpp"
 #include "lib/svm_sample.hpp"
 #include "worker/kv_client_table.hpp"
-#include "lib/batchiterator.hpp"
 
 /*
 third_party::SArray<double> compute_gradients(
@@ -43,12 +43,6 @@ third_party::SArray<double> compute_gradients(
 }
 */
 
-
-
-
-
-
-
 //. Define arguments
 DEFINE_int32(my_id, -1, "the process id of this program");
 DEFINE_string(config_file, "", "The config file path");
@@ -67,114 +61,100 @@ DEFINE_double(alpha, 0.001, "learning rate");
 
 namespace csci5570 {
 
-std::vector<double> compute_gradients(
-    const std::vector<lib::KddSample>& samples,
-    const std::vector<Key>& keys,
-    const std::vector<double>& vals,
-    double alpha
-) {
-    std::vector<double> deltas(keys.size(),0.);
-    for (auto sample : samples) {
-        auto& x= sample.x_;
-        double y = sample.y_;
-        double predict = 0.;
-        if (y < 0)
-            y = 0;
-        int idx = 0;
-        for (auto& field : x) {
-            while (keys[idx] < field.first)
-                ++idx;
-            predict += vals[idx] * field.second;
-        }
-        predict += vals.back();
-        predict = 1. / (1. + exp(-1 * predict));
-        idx = 0;
-        for (auto & field : x){
-            while (keys[idx] < field.first)
-                ++idx;
-            deltas[idx] += alpha * field.second * (y - predict);
-        }
-        deltas[deltas.size() - 1] += alpha * (y - predict);
+std::vector<double> compute_gradients(const std::vector<lib::KddSample>& samples, const std::vector<Key>& keys,
+                                      const std::vector<double>& vals, double alpha) {
+  std::vector<double> deltas(keys.size(), 0.);
+  for (auto sample : samples) {
+    auto& x = sample.x_;
+    double y = sample.y_;
+    double predict = 0.;
+    if (y < 0)
+      y = 0;
+    int idx = 0;
+    for (auto& field : x) {
+      while (keys[idx] < field.first)
+        ++idx;
+      predict += vals[idx] * field.second;
     }
-    return deltas;
+    predict += vals.back();
+    predict = 1. / (1. + exp(-1 * predict));
+    idx = 0;
+    for (auto& field : x) {
+      while (keys[idx] < field.first)
+        ++idx;
+      deltas[idx] += alpha * field.second * (y - predict);
+    }
+    deltas[deltas.size() - 1] += alpha * (y - predict);
+  }
+  return deltas;
 }
 
-
-
-double correct_rate(
-    const std::vector<lib::KddSample>& samples,
-    const std::vector<Key>& keys,
-    const std::vector<double>& vals
-) {
-    int total=samples.size();
-    double n=0;
-    for (auto sample : samples) {
-        auto& x= sample.x_;
-        double y = sample.y_;
-        double predict = 0.;
-        if (y < 0)
-            y = 0;
-        int idx = 0;
-        for (auto& field : x) {
-            while (keys[idx] < field.first)
-                ++idx;
-            predict += vals[idx] * field.second;
-        }
-        predict += vals.back();
-        predict = 1. / (1. + exp(-1 * predict));
-        int predict_;
-        if(predict>0){
-            predict_=1;
-        }
-        else{
-            predict=-1;
-        }
-        if(predict_==y){
-            n++;
-        }
+double correct_rate(const std::vector<lib::KddSample>& samples, const std::vector<Key>& keys,
+                    const std::vector<double>& vals) {
+  int total = samples.size();
+  double n = 0;
+  for (auto sample : samples) {
+    auto& x = sample.x_;
+    double y = sample.y_;
+    double predict = 0.;
+    if (y < 0)
+      y = 0;
+    int idx = 0;
+    for (auto& field : x) {
+      while (keys[idx] < field.first)
+        ++idx;
+      predict += vals[idx] * field.second;
     }
-    double result=n/total;
-    return result;
+    predict += vals.back();
+    predict = 1. / (1. + exp(-1 * predict));
+    int predict_;
+    if (predict > 0) {
+      predict_ = 1;
+    } else {
+      predict = -1;
+    }
+    if (predict_ == y) {
+      n++;
+    }
+  }
+  double result = n / total;
+  return result;
 }
-
-
-
 
 void LrTest() {
-//   int my_id = FLAGS_my_id;
-//   int n_nodes = 5;
-//   std::vector<Node> nodes(n_nodes);
-//   // Should read from config file
-//   for (int i = 0; i < n_nodes; ++i) {
-//     nodes[i].id = i;
-//     nodes[i].hostname = "proj" + std::to_string(i + 5);
-//     nodes[i].port = 45612;
-//     //"0:proj5:45612"
-//     //"1:proj6:45612"
-//   }
+  //   int my_id = FLAGS_my_id;
+  //   int n_nodes = 5;
+  //   std::vector<Node> nodes(n_nodes);
+  //   // Should read from config file
+  //   for (int i = 0; i < n_nodes; ++i) {
+  //     nodes[i].id = i;
+  //     nodes[i].hostname = "proj" + std::to_string(i + 5);
+  //     nodes[i].port = 45612;
+  //     //"0:proj5:45612"
+  //     //"1:proj6:45612"
+  //   }
 
-//   const Node& node = nodes[my_id];
+  //   const Node& node = nodes[my_id];
 
   // Load Data
-//   using DataStore = std::vector<lib::SVMSample>;
-//   using Parser = lib::Parser<lib::SVMSample, DataStore>;
-//   using Parse = std::function<lib::SVMSample(boost::string_ref, int)>;
+  //   using DataStore = std::vector<lib::SVMSample>;
+  //   using Parser = lib::Parser<lib::SVMSample, DataStore>;
+  //   using Parse = std::function<lib::SVMSample(boost::string_ref, int)>;
 
-//   // using Parse=std::function<Sample(boost::string_ref, int)>;
-//   DataStore data_store;
-//   lib::SVMSample svm_sample;
-//   // Parser svm_parser();
-//   auto svm_parse = Parser::parse_libsvm;
-//   std::string url = "hdfs:///datasets/classification/a9";
-//   lib::DataLoader<lib::SVMSample, DataStore> data_loader;
-//   data_loader.load<Parse>(FLAGS_hdfs_namenode, FLAGS_hdfs_namenode_port, FLAGS_hdfs_master_port, url, FLAGS_n_features,
-//                           svm_parse, &data_store);
-//   for (int i = 0; i < data_store.size(); i++) {
-//     LOG(INFO) << "Index :" << i << " " << data_store[i].toString();
-//   }
-//   LOG(INFO) << "Size " << data_store.size();
-
-
+  //   // using Parse=std::function<Sample(boost::string_ref, int)>;
+  //   DataStore data_store;
+  //   lib::SVMSample svm_sample;
+  //   // Parser svm_parser();
+  //   auto svm_parse = Parser::parse_libsvm;
+  //   std::string url = "hdfs:///datasets/classification/a9";
+  //   lib::DataLoader<lib::SVMSample, DataStore> data_loader;
+  //   data_loader.load<Parse>(FLAGS_hdfs_namenode, FLAGS_hdfs_namenode_port, FLAGS_hdfs_master_port, url,
+  //   FLAGS_n_features,
+  //                           svm_parse, &data_store);
+  //   for (int i = 0; i < data_store.size(); i++) {
+  //     LOG(INFO) << "Index :" << i << " " << data_store[i].toString();
+  //   }
+  //   LOG(INFO) << "Size " << data_store.size();
 
   using DataStore = std::vector<lib::KddSample>;
   using Parser = lib::Parser<lib::KddSample, DataStore>;
@@ -190,10 +170,8 @@ void LrTest() {
   lib::DataLoader<lib::KddSample, DataStore> data_loader;
   data_loader.load<Parse>(url, n_features, kdd_parse, &data_store);
 
-
-
-//   // Start Engine
-//   Engine engine(node, nodes);
+  //   // Start Engine
+  //   Engine engine(node, nodes);
   Node node{0, "localhost", 12353};
   Engine engine(node, {node});
   engine.StartEverything();
@@ -205,12 +183,12 @@ void LrTest() {
   // Specify task
   MLTask task;
   task.SetTables({kTable});
-//   std::vector<WorkerAlloc> worker_alloc;
-//   for (int i = 0; i < n_nodes; ++i) {
-    // woker_alloc.push_back({nodes[i].id, static_cast<uint32_t>(FLAGS_n_workers_per_node)});
-//     woker_alloc.push_back({nodes[i].id, 1});
-//   }
-//   task.SetWorkerAlloc(worker_alloc);
+  //   std::vector<WorkerAlloc> worker_alloc;
+  //   for (int i = 0; i < n_nodes; ++i) {
+  // woker_alloc.push_back({nodes[i].id, static_cast<uint32_t>(FLAGS_n_workers_per_node)});
+  //     woker_alloc.push_back({nodes[i].id, 1});
+  //   }
+  //   task.SetWorkerAlloc(worker_alloc);
   task.SetWorkerAlloc({{0, 1}});
   // get client table
   task.SetLambda([kTable, &data_store](const Info& info) {
@@ -233,24 +211,24 @@ void LrTest() {
     //   // clock
     // }
 
-
     // std::vector<int> keys;
     // for(int i=0;i<124;i++){
     //     keys.push_back(i);
     // }
-   BatchIterator<lib::KddSample> batch(data_store);
-   for (int iter = 0; iter < 5; ++iter) {
+    BatchIterator<lib::KddSample> batch(data_store);
+    for (int iter = 0; iter < 5; ++iter) {
       auto keys_data = batch.NextBatch(5000);
-    //   third_party::SArray<double> vals;
-    //   table.Get(keys_data.first, &vals);
-      std::vector<lib::KddSample> datasample=keys_data.second;
-      auto keys=keys_data.first;
+      //   third_party::SArray<double> vals;
+      //   table.Get(keys_data.first, &vals);
+      std::vector<lib::KddSample> datasample = keys_data.second;
+      auto keys = keys_data.first;
       std::vector<double> vals;
-      KVClientTable<double> table(info.thread_id, kTable, info.send_queue,info.partition_manager_map.find(kTable)->second, info.callback_runner);
-      table.Get(keys,&vals);
-      auto delta=compute_gradients(datasample,keys,vals,0.1);
-      table.Add(keys,delta);      
-   }
+      KVClientTable<double> table(info.thread_id, kTable, info.send_queue,
+                                  info.partition_manager_map.find(kTable)->second, info.callback_runner);
+      table.Get(keys, &vals);
+      auto delta = compute_gradients(datasample, keys, vals, 0.1);
+      table.Add(keys, delta);
+    }
 
     // // auto table=info.CreateKVClientTable(kTable);
     // KVClientTable<double> table(info.thread_id, kTable, info.send_queue,
@@ -274,20 +252,23 @@ void LrTest() {
   });
   engine.Run(task);
 
-  task.SetLambda([kTable, &data_store](const Info& info){
-      BatchIterator<lib::KddSample> batch(data_store);
-      auto keys_data = batch.NextBatch(10000);
-      std::vector<lib::KddSample> datasample=keys_data.second;
-      auto keys=keys_data.first;
-      std::vector<double> vals;
-      auto correctrate=correct_rate(datasample,keys,vals);
-      LOG(INFO)<<correctrate;
+  task.SetLambda([kTable, &data_store](const Info& info) {
+    BatchIterator<lib::KddSample> batch(data_store);
+    auto keys_data = batch.NextBatch(10000);
+    std::vector<lib::KddSample> datasample = keys_data.second;
+    auto keys = keys_data.first;
+    std::vector<double> vals;
+    KVClientTable<double> table(info.thread_id, kTable, info.send_queue,
+                                info.partition_manager_map.find(kTable)->second, info.callback_runner);
+    table.Get(keys, &vals);
+    auto correctrate = correct_rate(datasample, keys, vals);
+    LOG(INFO) << correctrate;
   });
 
   engine.Run(task);
 
   engine.StopEverything();
-//   return 1;
+  //   return 1;
 }
 }  // namespace csci5570
 
