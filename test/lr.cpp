@@ -127,7 +127,7 @@ double correct_rate(const std::vector<lib::KddSample>& samples, const std::vecto
   }
 
   double result = n / total;
-  LOG(INFO) << "Result:" << result;
+  // LOG(INFO) << "Result:" << result;
   return result;
 }
 
@@ -201,6 +201,23 @@ void LrTest() {
   //   task.SetWorkerAlloc(worker_alloc);
   task.SetWorkerAlloc({{0, 1}});
   // get client table
+  // Before learning
+  LOG(INFO) << "Before learning";
+  task.SetLambda([kTable, &data_store](const Info& info) {
+    BatchIterator<lib::KddSample> batch(data_store);
+    auto keys_data = batch.NextBatch(1000);
+    std::vector<lib::KddSample> datasample = keys_data.second;
+    auto keys = keys_data.first;
+    std::vector<double> vals;
+    KVClientTable<double> table(info.thread_id, kTable, info.send_queue,
+                                info.partition_manager_map.find(kTable)->second, info.callback_runner);
+    table.Get(keys, &vals);
+    auto correctrate = correct_rate(datasample, keys, vals);
+    LOG(INFO) << correctrate;
+  });
+
+  engine.Run(task);
+  LOG(INFO) << "Learning";
   task.SetLambda([kTable, &data_store](const Info& info) {
     // auto table = info.CreateKVClientTable<double>(kTable);
 
@@ -261,7 +278,7 @@ void LrTest() {
     // }
   });
   engine.Run(task);
-
+  LOG(INFO) << "After training";
   task.SetLambda([kTable, &data_store](const Info& info) {
     BatchIterator<lib::KddSample> batch(data_store);
     auto keys_data = batch.NextBatch(1000);
