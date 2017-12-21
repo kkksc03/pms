@@ -7,7 +7,7 @@
 #include "lib/data_loader.hpp"
 #include "lib/svm_sample.hpp"
 #include "worker/kv_client_table.hpp"
-#include "test/batchiterator.hpp"
+#include "lib/batchiterator.hpp"
 
 /*
 third_party::SArray<double> compute_gradients(
