@@ -131,7 +131,7 @@ double correct_rate(const std::vector<lib::KddSample>& samples, const std::vecto
   return result;
 }
 
-void LrTest() {
+void LrTest(uint32_t node_id) {
   //   int my_id = FLAGS_my_id;
   //   int n_nodes = 5;
   //   std::vector<Node> nodes(n_nodes);
@@ -182,8 +182,15 @@ void LrTest() {
 
   //   // Start Engine
   //   Engine engine(node, nodes);
-  Node node{0, "localhost", 23847};
-  Engine engine(node, {node});
+  uint32_t n=node_id;
+  Node node{n, "proj"+std::to_string(n+5), 23847};
+  std::vector<Node> nodes;
+  for(uint32_t i=0;i<=1;i++){
+    Node nodet{i, "proj"+std::to_string(i+5), 23847};
+    nodes.push_back(nodet);
+  }
+  LOG(INFO)<<node.hostname;
+  Engine engine(node, nodes);
   engine.StartEverything();
 
   // Create table on the server side
@@ -199,7 +206,7 @@ void LrTest() {
   //     woker_alloc.push_back({nodes[i].id, 1});
   //   }
   //   task.SetWorkerAlloc(worker_alloc);
-  task.SetWorkerAlloc({{0, 5}});
+  task.SetWorkerAlloc({{0, 5},{1,5}});
   // get client table
   // Before learning
   LOG(INFO) << "Before learning";
@@ -303,5 +310,7 @@ int main(int argc, char** argv) {
   google::InitGoogleLogging(argv[0]);
   FLAGS_stderrthreshold = 0;
   FLAGS_colorlogtostderr = true;
-  csci5570::LrTest();
+  uint32_t node_id;
+  node_id=atoi(argv[1]);
+  csci5570::LrTest(node_id);
 }
