@@ -199,7 +199,7 @@ void LrTest() {
   //     woker_alloc.push_back({nodes[i].id, 1});
   //   }
   //   task.SetWorkerAlloc(worker_alloc);
-  task.SetWorkerAlloc({{0, 1}});
+  task.SetWorkerAlloc({{0, 5}});
   // get client table
   // Before learning
   LOG(INFO) << "Before learning";
