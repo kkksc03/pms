@@ -68,8 +68,8 @@ std::vector<double> compute_gradients(const std::vector<lib::KddSample>& samples
     auto& x = sample.x_;
     double y = sample.y_;
     double predict = 0.;
-    if (y < 0)
-      y = 0;
+    // if (y < 0)
+    //   y = 0;
     int idx = 0;
     for (auto& field : x) {
       while (keys[idx] < field.first)
@@ -77,14 +77,22 @@ std::vector<double> compute_gradients(const std::vector<lib::KddSample>& samples
       predict += vals[idx] * field.second;
     }
     predict += vals.back();
-    predict = 1. / (1. + exp(-1 * predict));
+    int predictLabel;
+    if (predict > 0) {
+      predictLabel = 1;
+    } else {
+      predictLabel = -1;
+    }
+    // predict = 1. / (1. + exp(-1 * predict));
     idx = 0;
     for (auto& field : x) {
       while (keys[idx] < field.first)
         ++idx;
-      deltas[idx] += alpha * field.second * (y - predict);
+      // deltas[idx] += alpha * field.second * (y - predict);
+      deltas[idx] += alpha * field.second * (y - predictLabel);
     }
-    deltas[deltas.size() - 1] += alpha * (y - predict);
+    deltas[deltas.size() - 1] += alpha * (y - predictLabel);
+    // deltas[deltas.size() - 1] += alpha * (y - predict);
   }
   return deltas;
 }
@@ -97,8 +105,8 @@ double correct_rate(const std::vector<lib::KddSample>& samples, const std::vecto
     auto& x = sample.x_;
     double y = sample.y_;
     double predict = 0.;
-    if (y < 0)
-      y = 0;
+    // if (y < 0)
+    //   y = 0;
     int idx = 0;
     for (auto& field : x) {
       while (keys[idx] < field.first)
@@ -106,7 +114,7 @@ double correct_rate(const std::vector<lib::KddSample>& samples, const std::vecto
       predict += vals[idx] * field.second;
     }
     predict += vals.back();
-    predict = 1. / (1. + exp(-1 * predict));
+    // predict = 1. / (1. + exp(-1 * predict));
     int predict_;
     if (predict > 0) {
       predict_ = 1;
@@ -117,6 +125,7 @@ double correct_rate(const std::vector<lib::KddSample>& samples, const std::vecto
       n++;
     }
   }
+  LOG(INFO) << result;
   double result = n / total;
   return result;
 }
