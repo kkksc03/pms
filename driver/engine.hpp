@@ -135,7 +135,7 @@ class Engine {
   uint32_t CreateTable(ModelType model_type, StorageType storage_type, int model_staleness = 0) {
     std::unique_ptr<AbstractPartitionManager> pm;
     std::vector<uint32_t> vt;
-    for(auto node : noodes_){
+    for(auto node : nodes_){
       vt.push_back(node.id);
     }
     pm.reset(new HashPartitionManager(vt));
