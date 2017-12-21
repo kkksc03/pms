@@ -125,7 +125,9 @@ class LineInputFormat {
 
   bool fetch_new_block() {
     // fetch a new block
+    LOG(INFO) << "Fetch new blcok";
     buffer_ = splitter_->fetch_block(false);
+    LOG(INFO) << "Fetch complete";
     if (buffer_.empty())
       //  no more files, exit
       return false;
