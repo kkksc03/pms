@@ -131,11 +131,13 @@ class DataLoader : public AbstractDataLoader<Sample, DataStore> {
       bool success = true;
       int count = 0;
       boost::string_ref record;
+      LOG(INFO) << "Begin loading data";
       while (true) {
         success = infmt.next(record);
         if (!success) {
           break;
         }
+        LOG(INFO) << "Parse data";
         auto temp_sample = parse(record, 10);
         // LOG(INFO) << "Sample:" << count << " " << temp_sample.toString();
         datastore->push_back(temp_sample);
