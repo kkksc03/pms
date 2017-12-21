@@ -90,7 +90,7 @@ class DataLoader : public AbstractDataLoader<Sample, DataStore> {
     // 1. Connect to the data source, e.g. HDFS, via the modules in io
     // 2. Extract and parse lines
     // 3. Put samples into datastore
-    std::string hdfs_namenode = "proj10";
+    std::string hdfs_namenode = "proj5";
     LOG(INFO) << "URL:" << url;
     int hdfs_namenode_port = 9000;
     int master_port = 45743;  // use a random port number to avoid collision with other users
