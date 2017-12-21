@@ -111,7 +111,7 @@ double correct_rate(const std::vector<lib::KddSample>& samples, const std::vecto
     if (predict > 0) {
       predict_ = 1;
     } else {
-      predict = -1;
+      predict_ = -1;
     }
     if (predict_ == y) {
       n++;
@@ -254,7 +254,7 @@ void LrTest() {
 
   task.SetLambda([kTable, &data_store](const Info& info) {
     BatchIterator<lib::KddSample> batch(data_store);
-    auto keys_data = batch.NextBatch(10000);
+    auto keys_data = batch.NextBatch(1000);
     std::vector<lib::KddSample> datasample = keys_data.second;
     auto keys = keys_data.first;
     std::vector<double> vals;
