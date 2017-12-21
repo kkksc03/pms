@@ -205,7 +205,7 @@ void LrTest() {
   LOG(INFO) << "Before learning";
   task.SetLambda([kTable, &data_store](const Info& info) {
     BatchIterator<lib::KddSample> batch(data_store);
-    auto keys_data = batch.NextBatch(1000);
+    auto keys_data = batch.NextBatch(2000);
     std::vector<lib::KddSample> datasample = keys_data.second;
     auto keys = keys_data.first;
     std::vector<double> vals;
