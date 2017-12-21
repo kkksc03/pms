@@ -40,7 +40,8 @@ void Mailbox::Start() {
 void Mailbox::ConnectAndBind() {
   context_ = zmq_ctx_new();
   CHECK(context_ != nullptr) << "create zmq context failed";
-  zmq_ctx_set(context_, ZMQ_MAX_SOCKETS, 65536);
+  // zmq_ctx_set(context_, ZMQ_MAX_SOCKETS, 65536);
+  zmq_ctx_set(context_, ZMQ_MAX_SOCKETS, 98239);
 
   Bind(node_);
   VLOG(1) << "Finished binding";
