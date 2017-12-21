@@ -57,9 +57,8 @@ DEFINE_int32(n_workers_per_node, 1, "The number of workers per node");
 DEFINE_int32(n_iters, 10, "The number of interattions");
 DEFINE_int32(batch_size, 100, "Batch size");
 DEFINE_double(alpha, 0.001, "learning rate");
-
-namespace csci5570 {
 /*
+namespace csci5570 {
 void LrTest() {
   int my_id = FLAGS_my_id;
   int n_nodes = 5;
