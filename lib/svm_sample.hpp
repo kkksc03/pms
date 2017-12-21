@@ -9,7 +9,7 @@ namespace lib {
 // Consider both sparse and dense feature abstraction
 // You may use Eigen::Vector and Eigen::SparseVector template
 
-//std::pair(int,float)
+//std::pair(int,floatf)
 class SVMSample : public LabeledSample<third_party::SArray< int >, int> {
 public:
   std::string toString(){

@@ -99,13 +99,14 @@ void LrTest(){
     }
     LOG(INFO)<<"Size "<<data_store.size();
 
-/*
+
     //Start Engine 
     Engine engine(node, nodes);
     engine.StartEverything();
 
     //Create table on the server side
     const auto kTable = engine.CreateTable<double>(ModelType::ASP,StoreageType::Map,FLAGS_n_features+1,RangePartition);
+/*
     //Specify task
     MLTask task;
     task.SetTables({kTable});
