@@ -16,7 +16,7 @@ class TestDataLoader : public testing::Test {
   void TearDown() {}
 };
 
-TEST_F(TestDataLoader, LoadData) {
+TEST_F(TestDataLoader, LoadSVMData) {
   using DataStore = std::vector<lib::SVMSample>;
   using Parser = lib::Parser<lib::SVMSample, DataStore>;
   // using Parse = int;
