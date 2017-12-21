@@ -77,12 +77,7 @@ std::vector<double> compute_gradients(const std::vector<lib::KddSample>& samples
       predict += vals[idx] * field.second;
     }
     predict += vals.back();
-    int predictLabel;
-    if (predict >= 0) {
-      predictLabel = 1;
-    } else {
-      predictLabel = -1;
-    }
+    int predictLabel = (predict >= 0) 1 : -1;
     // predict = 1. / (1. + exp(-1 * predict));
     idx = 0;
     for (auto& field : x) {
@@ -115,15 +110,7 @@ double correct_rate(const std::vector<lib::KddSample>& samples, const std::vecto
     }
     predict += vals.back();
     // predict = 1. / (1. + exp(-1 * predict));
-    int predict_;
-    if (predict >= 0) {
-      predict_ = 1;
-    } else {
-      predict_ = -1;
-    }
-    if (predict_ == y) {
-      n++;
-    }
+    int predict_ = (predict >= 0) ? 1 : -1;
   }
 
   double result = n / total;
@@ -131,41 +118,76 @@ double correct_rate(const std::vector<lib::KddSample>& samples, const std::vecto
   return result;
 }
 
-void LrTest() {
-  //   int my_id = FLAGS_my_id;
-  //   int n_nodes = 5;
-  //   std::vector<Node> nodes(n_nodes);
-  //   // Should read from config file
-  //   for (int i = 0; i < n_nodes; ++i) {
-  //     nodes[i].id = i;
-  //     nodes[i].hostname = "proj" + std::to_string(i + 5);
-  //     nodes[i].port = 45612;
-  //     //"0:proj5:45612"
-  //     //"1:proj6:45612"
-  //   }
+void simpleLrTest() {
+    /*
+  int my_id = FLAGS_my_id;
+  int n_nodes = 5;
+  std::vector<Node> nodes(n_nodes);
+  // Should read from config file
+  for (int i = 0; i < n_nodes; ++i) {
+    nodes[i].id = i;
+    nodes[i].hostname = "proj" + std::to_string(i + 5);
+    nodes[i].port = 45612;
+    //"0:proj5:45612"
+    //"1:proj6:45612"
+  }
 
-  //   const Node& node = nodes[my_id];
+  const Node& node = nodes[my_id];
+  Engine engine(node, {node});
+  engine.StartEverything();
 
   // Load Data
   //   using DataStore = std::vector<lib::SVMSample>;
   //   using Parser = lib::Parser<lib::SVMSample, DataStore>;
   //   using Parse = std::function<lib::SVMSample(boost::string_ref, int)>;
 
-  //   // using Parse=std::function<Sample(boost::string_ref, int)>;
-  //   DataStore data_store;
-  //   lib::SVMSample svm_sample;
-  //   // Parser svm_parser();
-  //   auto svm_parse = Parser::parse_libsvm;
-  //   std::string url = "hdfs:///datasets/classification/a9";
-  //   lib::DataLoader<lib::SVMSample, DataStore> data_loader;
-  //   data_loader.load<Parse>(FLAGS_hdfs_namenode, FLAGS_hdfs_namenode_port, FLAGS_hdfs_master_port, url,
-  //   FLAGS_n_features,
-  //                           svm_parse, &data_store);
-  //   for (int i = 0; i < data_store.size(); i++) {
-  //     LOG(INFO) << "Index :" << i << " " << data_store[i].toString();
-  //   }
-  //   LOG(INFO) << "Size " << data_store.size();
+  // using Parse=std::function<Sample(boost::string_ref, int)>;
+  DataStore data_store;
+  lib::SVMSample svm_sample;
+  // Parser svm_parser();
+  auto svm_parse = Parser::parse_libsvm;
+  std::string url = "hdfs:///datasets/classification/a9";
+  lib::DataLoader<lib::SVMSample, DataStore> data_loader;
+  data_loader.load<Parse>(FLAGS_hdfs_namenode, F
+                          LAGS_hdfs_namenode_port, 
+                          FLAGS_hdfs_master_port, url, FLAGS_n_features,
+                          svm_parse, &data_store
+  );
+  for (int i = 0; i < data_store.size(); i++) {
+    LOG(INFO) << "Index :" << i << " " << data_store[i].toString();
+  }
+  LOG(INFO) << "Size " << data_store.size();
+  std::vector<WorkerAlloc> worker_alloc;
+  for (int i = 0; i < n_nodes; ++i) {
+    //woker_alloc.push_back({nodes[i].id, static_cast<uint32_t>(FLAGS_n_workers_per_node)});
+    woker_alloc.push_back({nodes[i].id, 1});
+  }
+  task.SetWorkerAlloc(worker_alloc);
+  task.SetLambda([kTable, &data_store](const Info& info) {
+    // auto table=info.CreateKVClientTable(kTable);
+    KVClientTable<double> table(info.thread_id, kTable, info.send_queue,
+                                info.partition_manager_map.find(kTable)->second, info.callback_runner);
+    std::vector<int> vals;
+    vals.resize(keys.size());
+    // table.Get(key,&vals);
+    for (auto sample : data_store) {
+        auto& x= sample.x_;
+        int& y = sample.y_;
+        int idx=0;
+        for (auto& field : x) {
+            while (keys[idx] < field)
+                ++idx;
+            vals[idx]+=1;
+        }
+    }
+    for(auto val : vals){
+        LOG(INFO)<<val;
+    }
+  }
+  */
+}
 
+void LrTest() {
   using DataStore = std::vector<lib::KddSample>;
   using Parser = lib::Parser<lib::KddSample, DataStore>;
   // using Parse = int;
@@ -193,12 +215,7 @@ void LrTest() {
   // Specify task
   MLTask task;
   task.SetTables({kTable});
-  //   std::vector<WorkerAlloc> worker_alloc;
-  //   for (int i = 0; i < n_nodes; ++i) {
-  // woker_alloc.push_back({nodes[i].id, static_cast<uint32_t>(FLAGS_n_workers_per_node)});
-  //     woker_alloc.push_back({nodes[i].id, 1});
-  //   }
-  //   task.SetWorkerAlloc(worker_alloc);
+
   task.SetWorkerAlloc({{0, 5}});
   // get client table
   // Before learning
@@ -257,25 +274,7 @@ void LrTest() {
       table.Add(keys, delta);
     }
 
-    // // auto table=info.CreateKVClientTable(kTable);
-    // KVClientTable<double> table(info.thread_id, kTable, info.send_queue,
-    //                             info.partition_manager_map.find(kTable)->second, info.callback_runner);
-    // std::vector<int> vals;
-    // vals.resize(keys.size());
-    // // table.Get(key,&vals);
-    // for (auto sample : data_store) {
-    //     auto& x= sample.x_;
-    //     int& y = sample.y_;
-    //     int idx=0;
-    //     for (auto& field : x) {
-    //         while (keys[idx] < field)
-    //             ++idx;
-    //         vals[idx]+=1;
-    //     }
-    // }
-    // for(auto val : vals){
-    //     LOG(INFO)<<val;
-    // }
+
   });
   engine.Run(task);
   LOG(INFO) << "After training";
