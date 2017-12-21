@@ -19,7 +19,7 @@ namespace csci5570{
                 auto& x=sample.x_;
                 for (auto& field : x) {
                     int key=field.first;
-                    std::vector<int>::iterator result = find(keys.begin(),keys.end(),key);
+                    std::vector<uint32_t>::iterator result = find(keys.begin(),keys.end(),key);
                     if(result==keys.end()){
                         keys.push_back(key);
                     }

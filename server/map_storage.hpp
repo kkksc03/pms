@@ -28,6 +28,9 @@ class MapStorage : public AbstractStorage {
     third_party::SArray<Val> reply_vals(typed_keys.size());
     // TODO
     for(int i=0;i<typed_keys.size();i++){
+        if(storage_.find(typed_keys[i])==storage_.end()){
+           reply_vals[i]=0;
+        }
         reply_vals[i]=storage_[typed_keys[i]];
     }
     return third_party::SArray<char>(reply_vals);
