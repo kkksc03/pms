@@ -17,7 +17,6 @@ class TestDataLoader : public testing::Test {
 };
 
 TEST_F(TestDataLoader, LoadData) {
-  /*
   using DataStore = std::vector<lib::SVMSample>;
   using Parser = lib::Parser<lib::SVMSample, DataStore>;
   // using Parse = int;
@@ -34,10 +33,9 @@ TEST_F(TestDataLoader, LoadData) {
   data_loader.load<Parse>(url, n_features, svm_parse, &data_store);
   data_loader.test();
   for (int i = 0; i < data_store.size(); i++) {
-    LOG(INFO) <<"Index :"<<i<<" "<<data_store[i].toString();
+    LOG(INFO) << "Index :" << i << " " << data_store[i].toString();
   }
-  LOG(INFO)<<"Size "<<data_store.size();
-  */
+  LOG(INFO) << "Size " << data_store.size();
 }
 TEST_F(TestDataLoader, LoadKddData) {
   using DataStore = std::vector<lib::KddSample>;
