@@ -39,26 +39,26 @@ class KVClientTable {
         callback_runner_(callback_runner){};
 
   // ========== API ========== //
-  void Clock(const std::vector<Key>& keys) {
-    third_party::SArray<Key> ktmp;
-    int i = 0;
-    while (i < keys.size()) {
-      ktmp.push_back(keys[i]);
-      i++;
-    }
-    std::vector<std::pair<int, third_party::SArray<Key>>> sliced;
-    partition_manager_->Slice(ktmp, &sliced);
-    uint32_t count = 0;
-    while (count < sliced.size()) {
-      Message m;
-      m.meta.sender = app_thread_id_;
-      m.meta.recver = sliced[count].first;
-      m.meta.flag = Flag::kClock;
-      m.meta.model_id = model_id_;
-      sender_queue_->Push(m);
-      count++;
-    }
-  }
+  // void Clock(const std::vector<Key>& keys) {
+  //   third_party::SArray<Key> ktmp;
+  //   int i = 0;
+  //   while (i < keys.size()) {
+  //     ktmp.push_back(keys[i]);
+  //     i++;
+  //   }
+  //   std::vector<std::pair<int, third_party::SArray<Key>>> sliced;
+  //   partition_manager_->Slice(ktmp, &sliced);
+  //   uint32_t count = 0;
+  //   while (count < sliced.size()) {
+  //     Message m;
+  //     m.meta.sender = app_thread_id_;
+  //     m.meta.recver = sliced[count].first;
+  //     m.meta.flag = Flag::kClock;
+  //     m.meta.model_id = model_id_;
+  //     sender_queue_->Push(m);
+  //     count++;
+  //   }
+  // }
   void Clock() {
     std::vector<uint32_t> server_thread_ids = this->partition_manager_.GetServerThreadIds();
     uint32_t count = 0;
