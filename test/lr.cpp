@@ -249,7 +249,7 @@ void LrTest() {
       KVClientTable<double> table(info.thread_id, kTable, info.send_queue,info.partition_manager_map.find(kTable)->second, info.callback_runner);
       table.Get(keys,&vals);
       auto delta=compute_gradients(datasample,keys,vals,0.1);
-      table.Add(keys,vals);      
+      table.Add(keys,delta);      
    }
 
     // // auto table=info.CreateKVClientTable(kTable);
