@@ -5,8 +5,8 @@
 #include "glog/logging.h"
 
 #include "io/coordinator.hpp"
-#include "io/hdfs_file_splitter.hpp"
 #include "io/hdfs_assigner.hpp"
+#include "io/hdfs_file_splitter.hpp"
 
 namespace csci5570 {
 
@@ -41,11 +41,13 @@ class LineInputFormat {
   void set_worker_info(int id) { id_ = id; }
 
   bool next(boost::string_ref& ref) {
+    LOG(INFO) << 1;
     if (buffer_.size() == 0) {
       bool success = fetch_new_block();
       if (success == false)
         return false;
     }
+    LOG(INFO) << 2;
     // last charater in block
     if (r == buffer_.size() - 1) {
       // fetch next block
