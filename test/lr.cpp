@@ -59,7 +59,7 @@ DEFINE_int32(batch_size, 100, "Batch size");
 DEFINE_double(alpha, 0.001, "learning rate");
 
 namespace csci5570 {
-
+/*
 void LrTest() {
   int my_id = FLAGS_my_id;
   int n_nodes = 5;
@@ -136,10 +136,10 @@ void LrTest() {
   return 1;
 }
 }  // namespace csci5570
-
+*/
 int main(int argc, char** argv) {
   google::InitGoogleLogging(argv[0]);
   FLAGS_stderrthreshold = 0;
   FLAGS_colorlogtostderr = true;
-  csci5570::LrTest();
+  //   csci5570::LrTest();
 }
