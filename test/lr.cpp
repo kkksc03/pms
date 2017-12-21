@@ -78,7 +78,7 @@ std::vector<double> compute_gradients(const std::vector<lib::KddSample>& samples
     }
     predict += vals.back();
     int predictLabel;
-    if (predict > 0) {
+    if (predict >= 0) {
       predictLabel = 1;
     } else {
       predictLabel = -1;
@@ -116,7 +116,7 @@ double correct_rate(const std::vector<lib::KddSample>& samples, const std::vecto
     predict += vals.back();
     // predict = 1. / (1. + exp(-1 * predict));
     int predict_;
-    if (predict > 0) {
+    if (predict >= 0) {
       predict_ = 1;
     } else {
       predict_ = -1;
