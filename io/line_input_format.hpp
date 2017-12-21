@@ -43,11 +43,12 @@ class LineInputFormat {
   bool next(boost::string_ref& ref) {
     LOG(INFO) << 1;
     if (buffer_.size() == 0) {
+      LOG(INFO) << 5;
       bool success = fetch_new_block();
       if (success == false)
         return false;
     }
-    LOG(INFO) << 2;
+    LOG(INFO) << 10;
     // last charater in block
     if (r == buffer_.size() - 1) {
       // fetch next block
