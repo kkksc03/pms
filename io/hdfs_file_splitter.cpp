@@ -28,6 +28,7 @@ boost::string_ref HDFSFileSplitter::fetch_block(bool is_next) {
   int nbytes = 0;
 
   if (is_next) {
+    LOG<<"Start read hdfs";
     nbytes = hdfsRead(fs_, file_, data_, hdfs_block_size);
     if (nbytes == 0)
       return "";
