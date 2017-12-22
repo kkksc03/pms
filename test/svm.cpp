@@ -110,7 +110,7 @@ void SVMTest(uint32_t node_id, int num_of_node) {
   Node node{n, "proj" + std::to_string(node_id), 26534};
   std::vector<Node> nodes;
   for (uint32_t i = 0; i < num_of_node; i++) {
-    Node nodet{i, "proj" + std::to_string(10 - i), 26534};
+    Node nodet{10 - i, "proj" + std::to_string(10 - i), 26534};
     nodes.push_back(nodet);
   }
   LOG(INFO) << node.hostname;
