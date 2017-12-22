@@ -176,21 +176,27 @@ void LrTest(uint32_t node_id) {
   // Parser svm_parser();
   auto kdd_parse = Parser::parse_kdd;
   int n_features = 10;
-  std::string url = "hdfs:///datasets/classification/kdd12";
+  std::string url = "hdfs:///datasets/classification/kdd12";  // Do not change
+  std::string hdfs_namenode = "proj10";                       // Do not change
+  std::string master_host = "proj"+std::to_string(n+5);                         // Set to worker name
+  std::string worker_host = "proj"+std::to_string(n+5);                         // Set to worker name
+  int hdfs_namenode_port = 9000;                              // Do not change
+  int master_port = 45743;                                    // Do not change
   lib::DataLoader<lib::KddSample, DataStore> data_loader;
-  data_loader.load<Parse>(url, n_features, kdd_parse, &data_store);
+  data_loader.load<Parse>(url, namenode, masterhost, workerhost, namenode_port, master_port, n_features, kdd_parse, &data_store);
+  
 
   //   // Start Engine
   //   Engine engine(node, nodes);
   uint32_t n=node_id;
   Node node{n, "proj"+std::to_string(n+5), 23847};
   std::vector<Node> nodes;
-  // for(uint32_t i=0;i<=1;i++){
-  //   Node nodet{i, "proj"+std::to_string(i+5), 23847};
-  //   nodes.push_back(nodet);
-  // }
+  for(uint32_t i=0;i<2;i++){
+    Node nodet{i, "proj"+std::to_string(i+5), 23847};
+    nodes.push_back(nodet);
+  }
   LOG(INFO)<<node.hostname;
-  Engine engine(node, {node});
+  Engine engine(node, {nodes});
   engine.StartEverything();
 
   // Create table on the server side
