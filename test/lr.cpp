@@ -185,12 +185,12 @@ void LrTest(uint32_t node_id) {
   uint32_t n=node_id;
   Node node{n, "proj"+std::to_string(n+5), 23847};
   std::vector<Node> nodes;
-  for(uint32_t i=0;i<=1;i++){
-    Node nodet{i, "proj"+std::to_string(i+5), 23847};
-    nodes.push_back(nodet);
-  }
+  // for(uint32_t i=0;i<=1;i++){
+  //   Node nodet{i, "proj"+std::to_string(i+5), 23847};
+  //   nodes.push_back(nodet);
+  // }
   LOG(INFO)<<node.hostname;
-  Engine engine(node, nodes);
+  Engine engine(node, {node});
   engine.StartEverything();
 
   // Create table on the server side
