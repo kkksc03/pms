@@ -41,14 +41,14 @@ class LineInputFormat {
   void set_worker_info(int id) { id_ = id; }
 
   bool next(boost::string_ref& ref) {
-    LOG(INFO) << 1;
+    // LOG(INFO) << 1;
     if (buffer_.size() == 0) {
-      LOG(INFO) << 5;
+      // LOG(INFO) << 5;
       bool success = fetch_new_block();
       if (success == false)
         return false;
     }
-    LOG(INFO) << 10;
+    // LOG(INFO) << 10;
     // last charater in block
     if (r == buffer_.size() - 1) {
       // fetch next block
@@ -125,9 +125,9 @@ class LineInputFormat {
 
   bool fetch_new_block() {
     // fetch a new block
-    LOG(INFO) << "Fetch new blcok";
+    // LOG(INFO) << "Fetch new blcok";
     buffer_ = splitter_->fetch_block(false);
-    LOG(INFO) << "Fetch complete";
+    // LOG(INFO) << "Fetch complete";
     if (buffer_.empty())
       //  no more files, exit
       return false;
