@@ -60,4 +60,4 @@ with open(hostfile, "r") as f:
     cmd += "".join([" --%s=%s" % (k,v) for k,v in params.items()])
     cmd += " &"
     print cmd
-    os.system(cmd)
+    # os.system(cmd)
