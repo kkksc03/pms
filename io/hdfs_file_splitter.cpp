@@ -36,13 +36,13 @@ boost::string_ref HDFSFileSplitter::fetch_block(bool is_next) {
       LOG(ERROR) << "read next block error!";
     }
   } else {
-    LOG(INFO) << "Start read hdfs in second branch";
+    // LOG(INFO) << "Start read hdfs in second branch";
     // ask master for a new block
     BinStream question;
-    LOG(INFO) << "Url:" << url_;
-    LOG(INFO) << "hostname" << hostname_;
-    LOG(INFO) << "num_threads_" << num_threads_;
-    LOG(INFO) << "id_" << id_;
+    // LOG(INFO) << "Url:" << url_;
+    // LOG(INFO) << "hostname" << hostname_;
+    // LOG(INFO) << "num_threads_" << num_threads_;
+    // LOG(INFO) << "id_" << id_;
     question << url_ << hostname_ << num_threads_ << id_;
     // 301 is constant for kBlockRequest
     BinStream answer = coordinator_->ask_master(question, 301);

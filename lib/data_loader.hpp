@@ -123,8 +123,8 @@ class DataLoader : public AbstractDataLoader<Sample, DataStore> {
       // LOG(INFO) << "In the thread";
       int num_threads = 1;
       int second_id = 0;
-      LOG(INFO) << "Print url in thread";
-      LOG(INFO) << url;
+      // LOG(INFO) << "Print url in thread";
+      // LOG(INFO) << url;
       LineInputFormat infmt(url, num_threads, second_id, &coordinator, worker_host, hdfs_namenode, hdfs_namenode_port);
       LOG(INFO) << "Line input is well prepared";
       // LOG(INFO) << "After infmt";
