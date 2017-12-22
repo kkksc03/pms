@@ -46,6 +46,7 @@ boost::string_ref HDFSFileSplitter::fetch_block(bool is_next) {
     question << url_ << hostname_ << num_threads_ << id_;
     // 301 is constant for kBlockRequest
     BinStream answer = coordinator_->ask_master(question, 301);
+    LOG(INFO) << "After answer";
     std::string fn;
     answer >> fn;
     answer >> offset_;
