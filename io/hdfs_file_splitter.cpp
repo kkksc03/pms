@@ -28,7 +28,7 @@ boost::string_ref HDFSFileSplitter::fetch_block(bool is_next) {
   int nbytes = 0;
 
   if (is_next) {
-    LOG(INFO) << "Start read hdfs";
+    LOG(INFO) << "Start read hdfs in first branch";
     nbytes = hdfsRead(fs_, file_, data_, hdfs_block_size);
     if (nbytes == 0)
       return "";
@@ -36,6 +36,7 @@ boost::string_ref HDFSFileSplitter::fetch_block(bool is_next) {
       LOG(ERROR) << "read next block error!";
     }
   } else {
+    LOG(INFO) << "Start read hdfs in second branch";
     // ask master for a new block
     BinStream question;
     question << url_ << hostname_ << num_threads_ << id_;
