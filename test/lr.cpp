@@ -178,12 +178,12 @@ void LrTest(uint32_t node_id) {
   int n_features = 10;
   std::string url = "hdfs:///datasets/classification/kdd12";  // Do not change
   std::string hdfs_namenode = "proj10";                       // Do not change
-  std::string master_host = "proj"+std::to_string(n+5);                         // Set to worker name
-  std::string worker_host = "proj"+std::to_string(n+5);                         // Set to worker name
+  std::string master_host = "proj"+std::to_string(node_id+5);                         // Set to worker name
+  std::string worker_host = "proj"+std::to_string(node_id+5);                         // Set to worker name
   int hdfs_namenode_port = 9000;                              // Do not change
   int master_port = 45743;                                    // Do not change
   lib::DataLoader<lib::KddSample, DataStore> data_loader;
-  data_loader.load<Parse>(url, namenode, master_host, worker_host, namenode_port, master_port, n_features, kdd_parse, &data_store);
+  data_loader.load<Parse>(url, hdfs_namenode, master_host, worker_host, hdfs_namenode_por, master_port, n_features, kdd_parse, &data_store);
   
 
   //   // Start Engine
