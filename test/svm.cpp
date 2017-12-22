@@ -41,7 +41,12 @@ std::vector<double> compute_gradients(const std::vector<lib::KddSample>& samples
       predict += vals[idx] * field.second;
     }
     predict += vals.back();
-    int predictLabel = (predict >= 0) ? 1 : -1;
+    int predictLabel;
+    if (predict >= 0) {
+      predictLabel = 1;
+    } else {
+      predictLabel = -1;
+    }
 
     idx = 0;
     for (auto& field : x) {
@@ -69,7 +74,12 @@ double correct_rate(const std::vector<lib::KddSample>& samples, const std::vecto
       predict += vals[idx] * field.second;
     }
     predict += vals.back();
-    int predict_ = (predict >= 0) ? 1 : -1;
+    int predict_;
+    if (predict >= 0) {
+      predict_ = 1;
+    } else {
+      predict_ = -1;
+    }
     if (predict_ == y) {
       n++;
     }
@@ -92,15 +102,17 @@ void SVMTest(uint32_t node_id, int num_of_node) {
   std::string master_host = "proj" + std::to_string(node_id);  // Set to worker name
   std::string worker_host = "proj" + std::to_string(node_id);  // Set to worker name
   int hdfs_namenode_port = 9000;                               // Do not change
-  int master_port = 56168;                                     // Do not change
+  int master_port = 41984;                                     // Do not change
+  int node_port = 52324;
+  int workers_per_node = 5;
   lib::DataLoader<lib::KddSample, DataStore> data_loader;
   data_loader.load<Parse>(url, hdfs_namenode, master_host, worker_host, hdfs_namenode_port, master_port, n_features,
                           kdd_parse, &data_store);
   uint32_t n = node_id;
-  Node node{n, "proj" + std::to_string(node_id), 26534};
+  Node node{n, "proj" + std::to_string(node_id), node_port};
   std::vector<Node> nodes;
   for (uint32_t i = 0; i < num_of_node; i++) {
-    Node nodet{10 - i, "proj" + std::to_string(10 - i), 26534};
+    Node nodet{10 - i, "proj" + std::to_string(10 - i), node_port};
     nodes.push_back(nodet);
   }
   LOG(INFO) << node.hostname;
@@ -113,14 +125,14 @@ void SVMTest(uint32_t node_id, int num_of_node) {
   // Specify task
   MLTask task;
   task.SetTables({kTable});
-  //   std::vector<WorkerAlloc> worker_alloc;
-  //   for (int i = 0; i < n_nodes; ++i) {
-  // woker_alloc.push_back({nodes[i].id, static_cast<uint32_t>(FLAGS_n_workers_per_node)});
-  //     woker_alloc.push_back({nodes[i].id, 1});
-  //   }
-  //   task.SetWorkerAlloc(worker_alloc);
+  std::vector<WorkerAlloc> worker_alloc;
+  for (int i = 0; i < num_of_node; i++) {
+    worker_alloc.push_back({nodes[i].id, static_cast<uint32_t>(workers_per_node)});
+    // woker_alloc.push_back({nodes[i].id, 1});
+  }
+  task.SetWorkerAlloc(worker_alloc);
   // task.SetWorkerAlloc({{0, 5}, {1, 5}});
-  task.SetWorkerAlloc({{9, 5}, {10, 5}});
+  // task.SetWorkerAlloc({{9, 5}, {10, 5}});
   // get client table
   // Before learning
   LOG(INFO) << "Before learning";
@@ -138,10 +150,11 @@ void SVMTest(uint32_t node_id, int num_of_node) {
   });
 
   engine.Run(task);
+  engine.Barrier();
   LOG(INFO) << "Learning";
   task.SetLambda([kTable, &data_store](const Info& info) {
     BatchIterator<lib::KddSample> batch(data_store);
-    for (int iter = 0; iter < 5; ++iter) {
+    for (int iter = 0; iter < 10; ++iter) {
       auto keys_data = batch.NextBatch(2000);
       std::vector<lib::KddSample> datasample = keys_data.second;
       auto keys = keys_data.first;
@@ -153,6 +166,7 @@ void SVMTest(uint32_t node_id, int num_of_node) {
       table.Add(keys, delta);
     }
   });
+  engine.Barrier();
   engine.Run(task);
   LOG(INFO) << "After training";
   task.SetLambda([kTable, &data_store](const Info& info) {
