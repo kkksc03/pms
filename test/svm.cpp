@@ -129,7 +129,8 @@ void SVMTest(uint32_t node_id, int num_of_node) {
   //     woker_alloc.push_back({nodes[i].id, 1});
   //   }
   //   task.SetWorkerAlloc(worker_alloc);
-  task.SetWorkerAlloc({{0, 5}, {1, 5}});
+  // task.SetWorkerAlloc({{0, 5}, {1, 5}});
+  task.SetWorkerAlloc({{9, 5}, {10, 5}});
   // get client table
   // Before learning
   LOG(INFO) << "Before learning";
