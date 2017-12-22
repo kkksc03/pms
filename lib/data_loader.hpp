@@ -1,7 +1,7 @@
 #pragma once
+#include <algorithm>
 #include <thread>
 #include <vector>
-#include <algorithm>
 #include "base/serialization.hpp"
 #include "boost/utility/string_ref.hpp"
 #include "io/coordinator.hpp"
@@ -105,8 +105,8 @@ class DataLoader : public AbstractDataLoader<Sample, DataStore> {
 
     // 2. Prepare meta info for the master and workers
     int proc_id = getpid();  // the actual process id, or you can assign a virtual one, as long as it is distinct
-    std::string master_host = "proj10";  // change to the node you are actually using
-    std::string worker_host = "proj10";  // change to the node you are actually using
+    std::string master_host = "proj5";  // change to the node you are actually using
+    std::string worker_host = "proj5";  // change to the node you are actually using
 
     // 3. One coordinator for one process
     Coordinator coordinator(proc_id, worker_host, &zmq_context, master_host, master_port);
