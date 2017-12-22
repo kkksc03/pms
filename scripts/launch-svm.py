@@ -15,8 +15,8 @@ from os.path import dirname, join
 # 4:worker5:37542
 #
 # hostfile = "machinefiles/local"
-hostfile = "machinefiles/5node"
-progfile = "debug/BasicExample"
+hostfile = "/SVMTest/machinefiles/3node"
+progfile = "/SVMTest/debug/BasicExample"
 
 script_path = os.path.realpath(__file__)
 proj_dir = dirname(dirname(script_path))
@@ -42,7 +42,7 @@ env_params = (
   )
 
 # TODO: May need to ls before run to make sure the related files are synced.
-clear_cmd = "ls " + hostfile_path + " > /dev/null ; ls " + prog_path + " > /dev/null; "
+# clear_cmd = "ls " + hostfile_path + " > /dev/null ; ls " + prog_path + " > /dev/null; "
 
 with open(hostfile, "r") as f:
   hostlist = []

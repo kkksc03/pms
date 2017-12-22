@@ -19,13 +19,27 @@ TEST_F(TestHashPartitionManager, SliceKeys) {
   third_party::SArray<Key> keys({1, 2, 3, 4, 5, 6, 7, 8, 9});
   std::vector<std::pair<int, AbstractPartitionManager::Keys>> sliced;
   pm.Slice(keys, &sliced);
-  LOG(INFO) << sliced.size();
+  LOG(INFO) << "Total server thread" << sliced.size();
   for (int i = 0; i < sliced.size(); i++) {
-    LOG(INFO) << "node id:" << sliced[i].first;
+    LOG(INFO) << "server thread id:" << sliced[i].first;
     if (sliced[i].second.size() > 0) {
       LOG(INFO) << "keys:";
       for (int j = 0; j < sliced[i].second.size(); j++) {
         LOG(INFO) << sliced[i].second[j];
+      }
+    }
+  }
+  third_party::SArray<Key> keys_2({1, 8, 9, 2, 3, 4, 5, 6, 7, 12, 13});
+  std::vector<std::pair<int, AbstractPartitionManager::Keys>> sliced_2;
+  pm.Slice(keys_2, &sliced_2);
+
+  LOG(INFO) << "Total server thread" << sliced_2.size();
+  for (int i = 0; i < sliced_2.size(); i++) {
+    LOG(INFO) << "server thread id:" << sliced_2[i].first;
+    if (sliced_2[i].second.size() > 0) {
+      LOG(INFO) << "keys:";
+      for (int j = 0; j < sliced_2[i].second.size(); j++) {
+        LOG(INFO) << sliced_2[i].second[j];
       }
     }
   }
@@ -36,9 +50,9 @@ TEST_F(TestHashPartitionManager, SliceKVs) {
   third_party::SArray<Key> keys({1, 2, 3, 4, 5, 6, 7, 8, 9});
   third_party::SArray<double> vals({.9, .8, .7, .6, .5, .4, .3, .2, .1});
   std::vector<std::pair<int, AbstractPartitionManager::KVPairs>> sliced;
-  LOG(INFO)<<"Start splice";
+  LOG(INFO) << "Start splice";
   pm.Slice(std::make_pair(keys, vals), &sliced);
-  LOG(INFO)<<"End splice";
+  LOG(INFO) << "End splice";
   LOG(INFO) << sliced.size();
   for (int i = 0; i < sliced.size(); i++) {
     LOG(INFO) << "Node id:" << sliced[i].first;
