@@ -183,7 +183,7 @@ void LrTest(uint32_t node_id) {
   int hdfs_namenode_port = 9000;                              // Do not change
   int master_port = 45743;                                    // Do not change
   lib::DataLoader<lib::KddSample, DataStore> data_loader;
-  data_loader.load<Parse>(url, hdfs_namenode, master_host, worker_host, hdfs_namenode_por, master_port, n_features, kdd_parse, &data_store);
+  data_loader.load<Parse>(url, hdfs_namenode, master_host, worker_host, hdfs_namenode_port, master_port, n_features, kdd_parse, &data_store);
   
 
   //   // Start Engine
