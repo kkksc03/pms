@@ -107,10 +107,10 @@ void SVMTest(uint32_t node_id, int num_of_node) {
   data_loader.load<Parse>(url, hdfs_namenode, master_host, worker_host, hdfs_namenode_port, master_port, n_features,
                           kdd_parse, &data_store);
   uint32_t n = node_id;
-  Node node{n, "proj" + std::to_string(node_id), 23847};
+  Node node{n, "proj" + std::to_string(node_id), 26534};
   std::vector<Node> nodes;
   for (uint32_t i = 0; i < num_of_node; i++) {
-    Node nodet{i, "proj" + std::to_string(10 - i), 23847};
+    Node nodet{i, "proj" + std::to_string(10 - i), 26534};
     nodes.push_back(nodet);
   }
   LOG(INFO) << node.hostname;
@@ -191,5 +191,7 @@ int main(int argc, char** argv) {
   uint32_t node_id;
   node_id = atoi(argv[1]);
   int num_of_node = atoi(argv[2]);
+  LOG(INFO) << "num of node:" << num_of_node;
+  LOG(INFO) << "Engine start at " << node_id;
   csci5570::SVMTest(node_id, num_of_node);
 }
