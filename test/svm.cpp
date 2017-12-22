@@ -88,7 +88,7 @@ double correct_rate(const std::vector<lib::KddSample>& samples, const std::vecto
   return result;
 }
 
-void SVMTest(uint32_t node_id) {
+void SVMTest(uint32_t node_id, int num_of_node) {
   using DataStore = std::vector<lib::KddSample>;
   using Parser = lib::Parser<lib::KddSample, DataStore>;
   using Parse = std::function<lib::KddSample(boost::string_ref, int)>;
@@ -107,10 +107,10 @@ void SVMTest(uint32_t node_id) {
   data_loader.load<Parse>(url, hdfs_namenode, master_host, worker_host, hdfs_namenode_port, master_port, n_features,
                           kdd_parse, &data_store);
   uint32_t n = node_id;
-  Node node{n, "proj" + std::to_string(n + 5), 23847};
+  Node node{n, "proj" + std::to_string(node_id), 23847};
   std::vector<Node> nodes;
-  for (uint32_t i = 0; i < 2; i++) {
-    Node nodet{i, "proj" + std::to_string(i + 5), 23847};
+  for (uint32_t i = 1; i < num_of_node; i++) {
+    Node nodet{i, "proj" + std::to_string(node_id - i), 23847};
     nodes.push_back(nodet);
   }
   LOG(INFO) << node.hostname;
@@ -190,5 +190,6 @@ int main(int argc, char** argv) {
   FLAGS_colorlogtostderr = true;
   uint32_t node_id;
   node_id = atoi(argv[1]);
-  csci5570::SVMTest(node_id);
+  int num_of_node = atoi(argv[2]);
+  csci5570::SVMTest(node_id, num_of_node);
 }
