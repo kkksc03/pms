@@ -179,7 +179,7 @@ void SVMTest(uint32_t node_id, int num_of_node) {
   });
 
   engine.Run(task);
-
+  engine.Barrier();
   engine.StopEverything();
   //   return 1;
 }
