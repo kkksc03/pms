@@ -196,7 +196,7 @@ void LrTest(uint32_t node_id) {
     nodes.push_back(nodet);
   }
   LOG(INFO)<<node.hostname;
-  Engine engine(node, {nodes});
+  Engine engine(node, nodes);
   engine.StartEverything();
 
   // Create table on the server side
