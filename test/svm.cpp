@@ -124,7 +124,7 @@ void SVMTest(uint32_t node_id, int num_of_node, int node_port, int master_port) 
   engine.StartEverything();
 
   // Create table on the server side
-  const auto kTable = engine.CreateTable<double>(ModelType::ASP, StorageType::Map);
+  const auto kTable = engine.CreateTable<double>(ModelType::BSP, StorageType::Map);
 
   // Specify task
   MLTask task;
@@ -168,6 +168,7 @@ void SVMTest(uint32_t node_id, int num_of_node, int node_port, int master_port) 
       table.Get(keys, &vals);
       auto delta = compute_gradients(datasample, keys, vals, 0.1);
       table.Add(keys, delta);
+      table.Clock();
     }
   });
   engine.Barrier();
