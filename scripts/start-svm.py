@@ -1,8 +1,8 @@
 import os
 num_of_nodes = 5
 cmd = ""
-port = 12718
-master_port = 32370
+port = 12730
+master_port = 32380
 for i in range(0, num_of_nodes):
     cmd = cmd + "ssh 1155086998@proj" + str(10 - i) + " "
     cmd = cmd + "/data/opt/tmp/1155086998/pms/build/./TestSVM " + \
