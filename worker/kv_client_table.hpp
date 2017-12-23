@@ -60,7 +60,7 @@ class KVClientTable {
   //   }
   // }
   void Clock() {
-    std::vector<uint32_t> server_thread_ids = this->partition_manager_.GetServerThreadIds();
+    std::vector<uint32_t> server_thread_ids = this->partition_manager_->GetServerThreadIds();
     uint32_t count = 0;
     while (count < server_thread_ids.size()) {
       Message m;
