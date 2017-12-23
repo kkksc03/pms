@@ -24,7 +24,7 @@ void SSPModel::Clock(Message& msg) {
       // LOG(INFO)<<"buffersize"<<buffersize;
   		if (buffersize != 0) {
   			std::vector<Message> ms = buffer_.Pop(temp);
-        LOG(INFO)<<ms.size();
+        // LOG(INFO)<<ms.size();
   			for (size_t index =0; index < ms.size(); index++){
   				Message r = storage_->Get(ms[index]);
   				reply_queue_->Push(r);
