@@ -124,7 +124,7 @@ void SVMTest(uint32_t node_id, int num_of_node, int node_port, int master_port) 
   engine.StartEverything();
 
   // Create table on the server side
-  const auto kTable = engine.CreateTable<double>(ModelType::BSP, StorageType::Map);
+  const auto kTable = engine.CreateTable<double>(ModelType::SSP, StorageType::Map);
 
   // Specify task
   MLTask task;
