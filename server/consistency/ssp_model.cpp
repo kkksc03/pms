@@ -15,13 +15,13 @@ void SSPModel::Clock(Message& msg) {
   int tid = msg.meta.sender;
   if (progress_tracker_.CheckThreadValid(tid)) {
   	int temp = progress_tracker_.AdvanceAndGetChangedMinClock(tid);
-    LOG(INFO)<<"Temp";
-    LOG(INFO)<<temp;
+    // LOG(INFO)<<"Temp";
+    // LOG(INFO)<<temp;
   	if (temp != -1) {
-      LOG(INFO)<<"Temp!=-1";
-      LOG(INFO)<<temp;
+      // LOG(INFO)<<"Temp!=-1";
+      // LOG(INFO)<<temp;
   		int buffersize = GetPendingSize(temp);
-      LOG(INFO)<<"buffersize"<<buffersize;
+      // LOG(INFO)<<"buffersize"<<buffersize;
   		if (buffersize != 0) {
   			std::vector<Message> ms = buffer_.Pop(temp);
         LOG(INFO)<<ms.size();
