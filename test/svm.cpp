@@ -151,6 +151,7 @@ void SVMTest(uint32_t node_id, int num_of_node, int node_port, int master_port) 
     table.Get(keys, &vals);
     auto correctrate = correct_rate(datasample, keys, vals);
     LOG(INFO) << correctrate;
+    table.Clock();
   });
 
   engine.Run(task);
@@ -185,6 +186,7 @@ void SVMTest(uint32_t node_id, int num_of_node, int node_port, int master_port) 
     table.Get(keys, &vals);
     auto correctrate = correct_rate(datasample, keys, vals);
     LOG(INFO) << correctrate;
+    table.Clock();
   });
   engine.Run(task);
   engine.Barrier();
