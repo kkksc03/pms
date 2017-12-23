@@ -1,5 +1,5 @@
 import os
-num_of_nodes = 6
+num_of_nodes = 5
 cmd = ""
 port = 12710
 master_port = 32350
