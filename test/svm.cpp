@@ -183,6 +183,7 @@ void SVMTest(uint32_t node_id, int num_of_node, int node_port, int master_port) 
     std::vector<double> vals;
     KVClientTable<double> table(info.thread_id, kTable, info.send_queue,
                                 info.partition_manager_map.find(kTable)->second, info.callback_runner);
+    LOG(INFO) << "Get key:" << node_id;
     table.Get(keys, &vals);
     auto correctrate = correct_rate(datasample, keys, vals);
     LOG(INFO) << correctrate;
