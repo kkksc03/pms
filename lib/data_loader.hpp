@@ -142,7 +142,7 @@ class DataLoader : public AbstractDataLoader<Sample, DataStore> {
         // LOG(INFO) << "Sample:" << count << " " << temp_sample.toString();
         datastore->push_back(temp_sample);
         ++count;
-        if (count == 20000) {
+        if (count == 100000) {
           break;
         }
       }
