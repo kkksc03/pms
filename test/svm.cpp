@@ -140,7 +140,7 @@ void SVMTest(uint32_t node_id, int num_of_node, int node_port, int master_port) 
   // get client table
   // Before learning
   LOG(INFO) << node_id << " before learning";
-  task.SetLambda([kTable, &data_store](const Info& info) {
+  task.SetLambda([kTable, &data_store, node_id](const Info& info) {
     BatchIterator<lib::KddSample> batch(data_store);
     auto keys_data = batch.NextBatch(2000);
     std::vector<lib::KddSample> datasample = keys_data.second;
@@ -148,7 +148,9 @@ void SVMTest(uint32_t node_id, int num_of_node, int node_port, int master_port) 
     std::vector<double> vals;
     KVClientTable<double> table(info.thread_id, kTable, info.send_queue,
                                 info.partition_manager_map.find(kTable)->second, info.callback_runner);
+    LOG(INFO) << "Get key:" << node_id;
     table.Get(keys, &vals);
+    LOG(INFO) << "Get complete:" << node_id;
     auto correctrate = correct_rate(datasample, keys, vals);
     LOG(INFO) << correctrate;
     table.Clock();
