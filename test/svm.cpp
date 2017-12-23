@@ -1,9 +1,9 @@
+#include <time.h>
 #include <vector>
+#include "driver/engine.hpp"
 #include "gflags/gflags.h"
 #include "glog/logging.h"
 #include "gtest/gtest.h"
-
-#include "driver/engine.hpp"
 #include "lib/batchiterator.hpp"
 #include "lib/data_loader.hpp"
 #include "lib/svm_sample.hpp"
@@ -88,7 +88,7 @@ double correct_rate(const std::vector<lib::KddSample>& samples, const std::vecto
   return result;
 }
 
-void SVMTest(uint32_t node_id, int num_of_node, int node_port) {
+void SVMTest(uint32_t node_id, int num_of_node, int node_port, int master_port) {
   using DataStore = std::vector<lib::KddSample>;
   using Parser = lib::Parser<lib::KddSample, DataStore>;
   using Parse = std::function<lib::KddSample(boost::string_ref, int)>;
@@ -102,8 +102,12 @@ void SVMTest(uint32_t node_id, int num_of_node, int node_port) {
   std::string master_host = "proj" + std::to_string(node_id);  // Set to worker name
   std::string worker_host = "proj" + std::to_string(node_id);  // Set to worker name
   int hdfs_namenode_port = 9000;                               // Do not change
-  int master_port = 41984;                                     // Do not change
-  // int node_port = 94286;
+  // int master_port = 12343; // Do not change
+  // srand((unsigned) time(0));
+  // int master_port = rand() % 90000;  // Random port
+  // if (master_port <= 10000) {
+  //   master_port += 10000;
+  // }
   int workers_per_node = 5;
   lib::DataLoader<lib::KddSample, DataStore> data_loader;
   data_loader.load<Parse>(url, hdfs_namenode, master_host, worker_host, hdfs_namenode_port, master_port, n_features,
@@ -135,7 +139,7 @@ void SVMTest(uint32_t node_id, int num_of_node, int node_port) {
   // task.SetWorkerAlloc({{9, 5}, {10, 5}});
   // get client table
   // Before learning
-  LOG(INFO) << "Before learning";
+  LOG(INFO) << node_id << " before learning";
   task.SetLambda([kTable, &data_store](const Info& info) {
     BatchIterator<lib::KddSample> batch(data_store);
     auto keys_data = batch.NextBatch(2000);
@@ -151,7 +155,7 @@ void SVMTest(uint32_t node_id, int num_of_node, int node_port) {
 
   engine.Run(task);
   engine.Barrier();
-  LOG(INFO) << "Learning";
+  LOG(INFO) << node_id << " is learning";
   task.SetLambda([kTable, &data_store](const Info& info) {
     BatchIterator<lib::KddSample> batch(data_store);
     for (int iter = 0; iter < 10; ++iter) {
@@ -168,7 +172,7 @@ void SVMTest(uint32_t node_id, int num_of_node, int node_port) {
   });
   engine.Barrier();
   engine.Run(task);
-  LOG(INFO) << "After learning";
+  LOG(INFO) << node_id << " After learning";
   task.SetLambda([kTable, &data_store](const Info& info) {
     BatchIterator<lib::KddSample> batch(data_store);
     auto keys_data = batch.NextBatch(2000);
@@ -181,9 +185,9 @@ void SVMTest(uint32_t node_id, int num_of_node, int node_port) {
     auto correctrate = correct_rate(datasample, keys, vals);
     LOG(INFO) << correctrate;
   });
-
   engine.Run(task);
   engine.Barrier();
+  LOG(INFO) << "Node " << node_id << " complete";
   engine.StopEverything();
   //   return 1;
 }
@@ -197,8 +201,10 @@ int main(int argc, char** argv) {
   node_id = atoi(argv[1]);
   int num_of_node = atoi(argv[2]);
   int node_port = atoi(argv[3]);
+  int master_port = atoi(argv[4]);
   LOG(INFO) << "num of node:" << num_of_node;
   LOG(INFO) << "Engine start at " << node_id;
   LOG(INFO) << "Node port" << node_port;
-  csci5570::SVMTest(node_id, num_of_node, node_port);
+  LOG(INFO) << "Master port" << master_port;
+  csci5570::SVMTest(node_id, num_of_node, node_port, master_port);
 }
