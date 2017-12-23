@@ -175,7 +175,7 @@ void SVMTest(uint32_t node_id, int num_of_node, int node_port, int master_port) 
   engine.Barrier();
   engine.Run(task);
   LOG(INFO) << node_id << " After learning";
-  task.SetLambda([kTable, &data_store](const Info& info) {
+  task.SetLambda([kTable, &data_store, node_id](const Info& info) {
     BatchIterator<lib::KddSample> batch(data_store);
     auto keys_data = batch.NextBatch(2000);
     std::vector<lib::KddSample> datasample = keys_data.second;
